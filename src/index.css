@@ -15,6 +15,12 @@
 }
 
 /* ─── React Flow overrides ─── */
+.react-flow__pane.draggable {
+  cursor: default !important;
+}
+.react-flow__pane.dragging {
+  cursor: grabbing !important;
+}
 .react-flow__handle {
   width: 14px !important;
   height: 14px !important;
