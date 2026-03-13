@@ -19,17 +19,8 @@ const CustomEdge = memo(function CustomEdge({
   const [editing, setEditing]     = useState(false)
   const [labelText, setLabelText] = useState(data.label || '')
   const updateEdgeData            = useDiagramStore((s) => s.updateEdgeData)
+  const pushHistory               = useDiagramStore((s) => s.pushHistory)
   const { screenToFlowPosition }  = useReactFlow()
-
-  // Stable refs so closure callbacks always have the latest values
-  const sfpRef      = useRef(screenToFlowPosition)
-  const updateRef   = useRef(updateEdgeData)
-  const idRef       = useRef(id)
-  const edgeRef     = useRef({ sourceX, sourceY, targetX, targetY, pathType: data.pathType || 'smoothstep' })
-  sfpRef.current    = screenToFlowPosition
-  updateRef.current = updateEdgeData
-  idRef.current     = id
-  edgeRef.current   = { sourceX, sourceY, targetX, targetY, pathType: data.pathType || 'smoothstep' }
 
   const color       = data.edgeColor || '#6B7280'
   const strokeWidth = data.edgeWidth || 2
@@ -37,6 +28,16 @@ const CustomEdge = memo(function CustomEdge({
   const arrowStyle  = data.arrowType || 'filled'
   const pathType    = data.pathType  || 'smoothstep'
   const wp          = data.waypoint  || null
+
+  // Stable refs so closure callbacks always have the latest values
+  const sfpRef     = useRef(screenToFlowPosition)
+  const updateRef  = useRef(updateEdgeData)
+  const historyRef = useRef(pushHistory)
+  const edgeRef    = useRef({ sourceX, sourceY, targetX, targetY, pathType })
+  sfpRef.current    = screenToFlowPosition
+  updateRef.current = updateEdgeData
+  historyRef.current = pushHistory
+  edgeRef.current   = { sourceX, sourceY, targetX, targetY, pathType }
 
   let pathStr, labelX, labelY
   if (pathType === 'straight') {
@@ -78,11 +79,12 @@ const CustomEdge = memo(function CustomEdge({
         x: Math.min(Math.max(pos.x, Math.min(sx, tx)), Math.max(sx, tx)),
         y: Math.min(Math.max(pos.y, Math.min(sy, ty)), Math.max(sy, ty)),
       } : pos
-      updateRef.current(idRef.current, { waypoint: wpPos })
+      updateRef.current(id, { waypoint: wpPos }, { skipHistory: true })
     }
     const onUp = () => {
       document.removeEventListener('mousemove', onMove, { capture: true })
       document.removeEventListener('mouseup',   onUp,   { capture: true })
+      historyRef.current()
     }
     document.addEventListener('mousemove', onMove, { capture: true })
     document.addEventListener('mouseup',   onUp,   { capture: true })

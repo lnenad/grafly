@@ -59,6 +59,11 @@ const useDiagramStore = create((set, get) => ({
       const nodes = applyNodeChanges(changes, state.nodes)
       return { nodes }
     })
+    const ended = changes.some(
+      (c) => (c.type === 'position' && c.dragging === false) ||
+             (c.type === 'dimensions' && c.resizing === false)
+    )
+    if (ended) get()._pushHistory()
     const { id, nodes, edges, name, viewport } = get()
     debouncedSave(id, { name, nodes, edges, viewport })
   },
@@ -115,6 +120,7 @@ const useDiagramStore = create((set, get) => ({
         n.id === nodeId ? { ...n, data: { ...n.data, ...newData } } : n
       ),
     }))
+    get()._pushHistory()
     const { id, nodes, edges, name, viewport } = get()
     debouncedSave(id, { name, nodes, edges, viewport })
   },
@@ -232,15 +238,20 @@ const useDiagramStore = create((set, get) => ({
   },
 
   // ── Edge update ──
-  updateEdgeData: (edgeId, newData) => {
+  // skipHistory: true is used during continuous waypoint drag (mousemove) to avoid
+  // flooding the history stack; CustomEdge calls pushHistory() once on mouseup.
+  updateEdgeData: (edgeId, newData, { skipHistory = false } = {}) => {
     set((state) => ({
       edges: state.edges.map((e) =>
         e.id === edgeId ? { ...e, data: { ...e.data, ...newData } } : e
       ),
     }))
+    if (!skipHistory) get()._pushHistory()
     const { id, nodes, edges, name, viewport } = get()
     debouncedSave(id, { name, nodes, edges, viewport })
   },
+
+  pushHistory: () => get()._pushHistory(),
 }))
 
 export default useDiagramStore
