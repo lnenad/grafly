@@ -20,6 +20,7 @@ import {
   Layers,
 } from 'lucide-react'
 import useDiagramStore from '../store/diagramStore'
+import { DEFAULT_FONT_WEIGHT, DEFAULT_FONT_WEIGHT_BOLD } from '../utils/styleConstants'
 
 const PRESET_COLORS = [
   { fill: '#EEF2FF', stroke: '#818CF8', label: 'Indigo' },
@@ -72,9 +73,10 @@ function ColorInput({ value, onChange }) {
       <div
         className="relative w-6 h-6 rounded cursor-pointer border border-gray-200 overflow-hidden shrink-0"
         style={{
-          background: value === 'transparent'
+          backgroundColor: value === 'transparent' ? 'white' : value,
+          backgroundImage: value === 'transparent'
             ? 'linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%), linear-gradient(45deg, #ddd 25%, white 25%, white 75%, #ddd 75%)'
-            : value,
+            : 'none',
           backgroundSize: '8px 8px, 8px 8px',
           backgroundPosition: '0 0, 4px 4px',
         }}
@@ -240,8 +242,8 @@ function NodeDataSections({ data, update, isCloud }) {
             <Label>Style</Label>
             <div className="flex gap-1">
               <ToggleButton
-                active={data.fontWeight === 'bold' || data.fontWeight === '700'}
-                onClick={() => update({ fontWeight: (data.fontWeight === 'bold' || data.fontWeight === '700') ? '400' : 'bold' })}
+                active={data.fontWeight === DEFAULT_FONT_WEIGHT_BOLD}
+                onClick={() => update({ fontWeight: data.fontWeight === DEFAULT_FONT_WEIGHT_BOLD ? DEFAULT_FONT_WEIGHT : DEFAULT_FONT_WEIGHT_BOLD })}
                 title="Bold"
               ><Bold size={13} /></ToggleButton>
               <ToggleButton

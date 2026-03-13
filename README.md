@@ -36,6 +36,30 @@ src/
   utils/
     storage.js               # localStorage read/write helpers
     fileUtils.js             # Import/export (JSON, PNG)
+    styleConstants.js        # Shared styling tokens (colors, font weights, dash patterns)
+```
+
+## Style Constants
+
+All shared styling values live in `src/utils/styleConstants.js`. **New components and shape definitions must import from here instead of hardcoding values.**
+
+```js
+import {
+  COLOR_PRIMARY,          // #7B61FF — brand accent (selection, handles, active states)
+  COLOR_TEXT_DEFAULT,     // #111827 — default node label color
+  COLOR_BORDER_DEFAULT,   // #E5E7EB — default border/stroke for cloud shapes & labels
+  COLOR_EDGE_DEFAULT,     // #6B7280 — default edge stroke color
+  DEFAULT_FONT_WEIGHT,    // '600'   — semibold, the standard label weight
+  DEFAULT_FONT_WEIGHT_BOLD, // '700' — bold, toggled via the Bold button
+  DEFAULT_FONT_SIZE,      // 13      — fallback label font size (px)
+  DEFAULT_TEXT_ALIGN,     // 'center'
+  DEFAULT_STROKE_WIDTH,   // 2
+  DEFAULT_STROKE_STYLE,   // 'solid'
+  DEFAULT_OPACITY,        // 1
+  STROKE_DASH_DASHED,     // '6 3'  — dashed SVG shapes
+  STROKE_DASH_DOTTED,     // '2 3'  — dotted SVG shapes & edges
+  EDGE_DASH_DASHED,       // '6 4'  — dashed edges (slightly wider gap than shapes)
+} from '../utils/styleConstants'
 ```
 
 ## Features

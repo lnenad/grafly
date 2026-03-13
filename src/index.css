@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
 :root {
   --primary: #7B61FF;
   --primary-hover: #6D54EF;
@@ -15,7 +19,7 @@
 }
 
 /* ─── React Flow overrides ─── */
-.react-flow__pane.draggable {
+.react-flow__pane {
   cursor: default !important;
 }
 .react-flow__pane.dragging {

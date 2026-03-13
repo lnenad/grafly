@@ -12,6 +12,7 @@ import '@xyflow/react/dist/style.css'
 import ShapeNode from './nodes/ShapeNode'
 import CustomEdge from './edges/CustomEdge'
 import useDiagramStore from '../store/diagramStore'
+import { COLOR_PRIMARY } from '../utils/styleConstants'
 
 const nodeTypes = { shape: ShapeNode }
 const edgeTypes = { custom: CustomEdge }
@@ -110,7 +111,10 @@ function CanvasInner({ onContextMenu }) {
         snapGrid={[16, 16]}
         deleteKeyCode={null}
         multiSelectionKeyCode="Shift"
-        selectionKeyCode="Shift"
+        selectionKeyCode={null}
+        selectionOnDrag={true}
+        panOnDrag={[1]}
+        panActivationKeyCode="Shift"
         fitView={nodes.length === 0}
         minZoom={0.1}
         maxZoom={4}
@@ -140,7 +144,7 @@ function CanvasInner({ onContextMenu }) {
         {showMinimap && (
           <MiniMap
             nodeColor={(n) => n.data?.fillColor || '#EEF2FF'}
-            nodeStrokeColor={() => '#7B61FF'}
+            nodeStrokeColor={() => COLOR_PRIMARY}
             nodeStrokeWidth={2}
             style={{ bottom: 24, right: 24 }}
             zoomable

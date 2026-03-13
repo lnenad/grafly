@@ -8,6 +8,13 @@ import {
   useReactFlow,
 } from '@xyflow/react'
 import useDiagramStore from '../../store/diagramStore'
+import {
+  COLOR_PRIMARY,
+  COLOR_BORDER_DEFAULT,
+  COLOR_EDGE_DEFAULT,
+  STROKE_DASH_DOTTED,
+  EDGE_DASH_DASHED,
+} from '../../utils/styleConstants'
 
 const CustomEdge = memo(function CustomEdge({
   id,
@@ -22,9 +29,9 @@ const CustomEdge = memo(function CustomEdge({
   const pushHistory               = useDiagramStore((s) => s.pushHistory)
   const { screenToFlowPosition }  = useReactFlow()
 
-  const color       = data.edgeColor || '#6B7280'
+  const color       = data.edgeColor || COLOR_EDGE_DEFAULT
   const strokeWidth = data.edgeWidth || 2
-  const dashArray   = data.edgeStyle === 'dashed' ? '6 4' : data.edgeStyle === 'dotted' ? '2 3' : undefined
+  const dashArray   = data.edgeStyle === 'dashed' ? EDGE_DASH_DASHED : data.edgeStyle === 'dotted' ? STROKE_DASH_DOTTED : undefined
   const arrowStyle  = data.arrowType || 'filled'
   const pathType    = data.pathType  || 'smoothstep'
   const wp          = data.waypoint  || null
@@ -105,12 +112,12 @@ const CustomEdge = memo(function CustomEdge({
       <defs>
         <marker id={markerId} markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
           {arrowStyle === 'open'
-            ? <path d="M0,0 L6,3 L0,6" fill="none" stroke={selected ? '#7B61FF' : color} strokeWidth="1.5" />
-            : <path d="M0,0 L0,6 L8,3 z" fill={selected ? '#7B61FF' : color} />}
+            ? <path d="M0,0 L6,3 L0,6" fill="none" stroke={selected ? COLOR_PRIMARY : color} strokeWidth="1.5" />
+            : <path d="M0,0 L0,6 L8,3 z" fill={selected ? COLOR_PRIMARY : color} />}
         </marker>
         {data.arrowStart && (
           <marker id={`${markerId}-start`} markerWidth="8" markerHeight="8" refX="2" refY="3" orient="auto-start-reverse">
-            <path d="M0,0 L0,6 L8,3 z" fill={selected ? '#7B61FF' : color} />
+            <path d="M0,0 L0,6 L8,3 z" fill={selected ? COLOR_PRIMARY : color} />
           </marker>
         )}
       </defs>
@@ -118,7 +125,7 @@ const CustomEdge = memo(function CustomEdge({
       <BaseEdge
         path={pathStr}
         style={{
-          stroke:          selected ? '#7B61FF' : color,
+          stroke:          selected ? COLOR_PRIMARY : color,
           strokeWidth:     selected ? Math.max(strokeWidth, 2) : strokeWidth,
           strokeDasharray: dashArray,
           strokeLinecap:   'round',
@@ -172,7 +179,7 @@ const CustomEdge = memo(function CustomEdge({
               />
             ) : (
               <div style={{
-                background: 'white', border: `1px solid ${selected ? '#7B61FF' : '#E5E7EB'}`,
+                background: 'white', border: `1px solid ${selected ? COLOR_PRIMARY : COLOR_BORDER_DEFAULT}`,
                 borderRadius: 4, padding: '2px 8px', fontSize: 12, color: '#374151',
                 cursor: 'pointer', boxShadow: '0 1px 4px rgba(0,0,0,0.08)', userSelect: 'none',
               }}>

@@ -1,6 +1,14 @@
 import { memo, useState, useCallback, useRef, useEffect } from 'react'
 import { Handle, Position, NodeResizer, useReactFlow } from '@xyflow/react'
 import useDiagramStore from '../../store/diagramStore'
+import {
+  COLOR_TEXT_DEFAULT,
+  DEFAULT_FONT_WEIGHT,
+  DEFAULT_FONT_SIZE,
+  DEFAULT_TEXT_ALIGN,
+  STROKE_DASH_DASHED,
+  STROKE_DASH_DOTTED,
+} from '../../utils/styleConstants'
 import { AWS_ICONS } from '../../data/awsShapes'
 import { GCP_ICONS } from '../../data/gcpShapes'
 
@@ -193,13 +201,13 @@ const ShapeNode = memo(function ShapeNode({ id, data, selected, width, height })
     }
   }, [commitEdit])
 
-  const strokeDash = data.strokeStyle === 'dashed' ? '6 3' : data.strokeStyle === 'dotted' ? '2 3' : undefined
+  const strokeDash = data.strokeStyle === 'dashed' ? STROKE_DASH_DASHED : data.strokeStyle === 'dotted' ? STROKE_DASH_DOTTED : undefined
 
   const labelStyle = {
-    color: data.textColor || '#111827',
-    fontSize: `${data.fontSize || 13}px`,
-    fontWeight: data.fontWeight || '400',
-    textAlign: data.textAlign || 'center',
+    color: data.textColor || COLOR_TEXT_DEFAULT,
+    fontSize: `${data.fontSize || DEFAULT_FONT_SIZE}px`,
+    fontWeight: data.fontWeight || DEFAULT_FONT_WEIGHT,
+    textAlign: data.textAlign || DEFAULT_TEXT_ALIGN,
     fontStyle: data.fontStyle || 'normal',
     textDecoration: data.textDecoration || 'none',
     lineHeight: 1.35,

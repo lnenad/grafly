@@ -1,14 +1,22 @@
+import {
+  COLOR_TEXT_DEFAULT,
+  COLOR_BORDER_DEFAULT,
+  DEFAULT_FONT_WEIGHT,
+  DEFAULT_STROKE_STYLE,
+  DEFAULT_OPACITY,
+} from '../utils/styleConstants'
+
 const makeDefaults = (shapeType, label, accentColor) => ({
   shapeType,
   label,
   fillColor: '#FFFFFF',
-  strokeColor: '#E5E7EB',
+  strokeColor: COLOR_BORDER_DEFAULT,
   strokeWidth: 1,
-  strokeStyle: 'solid',
-  textColor: '#111827',
+  strokeStyle: DEFAULT_STROKE_STYLE,
+  textColor: COLOR_TEXT_DEFAULT,
   fontSize: 12,
-  fontWeight: '500',
-  opacity: 1,
+  fontWeight: DEFAULT_FONT_WEIGHT,
+  opacity: DEFAULT_OPACITY,
   accentColor,
   isCloudShape: true,
 })
