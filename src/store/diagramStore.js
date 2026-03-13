@@ -48,6 +48,7 @@ const useDiagramStore = create((set, get) => ({
   // ── UI state ──
   selectedNodes: [],
   selectedEdges: [],
+  clipboard: null,
   showMinimap: true,
   showGrid: true,
   snapToGrid: false,
@@ -252,6 +253,164 @@ const useDiagramStore = create((set, get) => ({
   },
 
   pushHistory: () => get()._pushHistory(),
+
+  // ── Programmatic selection (used by right-click) ──
+  selectNode: (nodeId) => {
+    set((state) => {
+      const nodes = state.nodes.map((n) => ({ ...n, selected: n.id === nodeId }))
+      const edges = state.edges.map((e) => ({ ...e, selected: false }))
+      return { nodes, edges, selectedNodes: nodes.filter((n) => n.selected), selectedEdges: [] }
+    })
+  },
+  selectEdge: (edgeId) => {
+    set((state) => {
+      const nodes = state.nodes.map((n) => ({ ...n, selected: false }))
+      const edges = state.edges.map((e) => ({ ...e, selected: e.id === edgeId }))
+      return { nodes, edges, selectedNodes: [], selectedEdges: edges.filter((e) => e.selected) }
+    })
+  },
+
+  // ── Bulk node data update (applies patch to all selected nodes) ──
+  updateSelectedNodesData: (newData) => {
+    const { selectedNodes } = get()
+    const selectedIds = new Set(selectedNodes.map((n) => n.id))
+    set((state) => ({
+      nodes: state.nodes.map((n) =>
+        selectedIds.has(n.id) ? { ...n, data: { ...n.data, ...newData } } : n
+      ),
+    }))
+    get()._pushHistory()
+    const { id, nodes, edges, name, viewport } = get()
+    debouncedSave(id, { name, nodes, edges, viewport })
+  },
+
+  // ── Copy / Paste ──
+  copySelected: () => {
+    const { selectedNodes, selectedEdges, nodes, edges } = get()
+    const selectedNodeIds = new Set(selectedNodes.map((n) => n.id))
+    const copiedNodes = nodes.filter((n) => selectedNodeIds.has(n.id))
+    const copiedEdges = edges.filter(
+      (e) => selectedNodeIds.has(e.source) && selectedNodeIds.has(e.target)
+    )
+    set({ clipboard: { nodes: copiedNodes, edges: copiedEdges } })
+  },
+
+  paste: () => {
+    const { clipboard } = get()
+    if (!clipboard?.nodes?.length) return
+    const idMap = {}
+    const ts = Date.now()
+    const newNodes = clipboard.nodes.map((n) => {
+      const newId = `n_${ts}_${Math.random().toString(36).slice(2, 6)}`
+      idMap[n.id] = newId
+      return { ...n, id: newId, position: { x: n.position.x + 20, y: n.position.y + 20 }, selected: true }
+    })
+    const newEdges = clipboard.edges.map((e) => ({
+      ...e,
+      id: `e_${ts}_${Math.random().toString(36).slice(2, 6)}`,
+      source: idMap[e.source],
+      target: idMap[e.target],
+      selected: true,
+    }))
+    set((state) => ({
+      nodes: [...state.nodes.map((n) => ({ ...n, selected: false })), ...newNodes],
+      edges: [...state.edges.map((e) => ({ ...e, selected: false })), ...newEdges],
+    }))
+    get()._pushHistory()
+    const { id, nodes, edges, name, viewport } = get()
+    debouncedSave(id, { name, nodes, edges, viewport })
+  },
+
+  // ── Align ──
+  alignNodes: (type) => {
+    const { selectedNodes, nodes: currentNodes } = get()
+    if (selectedNodes.length < 2) return
+    const selectedIds = new Set(selectedNodes.map((n) => n.id))
+    const sel = currentNodes.filter((n) => selectedIds.has(n.id))
+    const getW = (n) => n.measured?.width  || n.width  || 160
+    const getH = (n) => n.measured?.height || n.height || 80
+
+    let ref
+    if (type === 'left')     ref = Math.min(...sel.map((n) => n.position.x))
+    if (type === 'center-h') ref = (Math.min(...sel.map((n) => n.position.x)) + Math.max(...sel.map((n) => n.position.x + getW(n)))) / 2
+    if (type === 'right')    ref = Math.max(...sel.map((n) => n.position.x + getW(n)))
+    if (type === 'top')      ref = Math.min(...sel.map((n) => n.position.y))
+    if (type === 'center-v') ref = (Math.min(...sel.map((n) => n.position.y)) + Math.max(...sel.map((n) => n.position.y + getH(n)))) / 2
+    if (type === 'bottom')   ref = Math.max(...sel.map((n) => n.position.y + getH(n)))
+
+    set((state) => ({
+      nodes: state.nodes.map((n) => {
+        if (!selectedIds.has(n.id)) return n
+        const w = getW(n), h = getH(n)
+        const pos = { ...n.position }
+        if (type === 'left')     pos.x = ref
+        if (type === 'center-h') pos.x = ref - w / 2
+        if (type === 'right')    pos.x = ref - w
+        if (type === 'top')      pos.y = ref
+        if (type === 'center-v') pos.y = ref - h / 2
+        if (type === 'bottom')   pos.y = ref - h
+        return { ...n, position: pos }
+      }),
+    }))
+    get()._pushHistory()
+    const { id, nodes, edges, name, viewport } = get()
+    debouncedSave(id, { name, nodes, edges, viewport })
+  },
+
+  // ── Stacking order ──
+  bringToFront: () => {
+    const { selectedNodes, nodes: currentNodes } = get()
+    if (!selectedNodes.length) return
+    const maxZ = Math.max(0, ...currentNodes.map((n) => n.zIndex || 0))
+    set((state) => ({
+      nodes: state.nodes.map((n) =>
+        selectedNodes.some((s) => s.id === n.id) ? { ...n, zIndex: maxZ + 1 } : n
+      ),
+    }))
+    get()._pushHistory()
+    const { id, nodes, edges, name, viewport } = get()
+    debouncedSave(id, { name, nodes, edges, viewport })
+  },
+
+  sendToBack: () => {
+    const { selectedNodes, nodes: currentNodes } = get()
+    if (!selectedNodes.length) return
+    const minZ = Math.min(0, ...currentNodes.map((n) => n.zIndex || 0))
+    set((state) => ({
+      nodes: state.nodes.map((n) =>
+        selectedNodes.some((s) => s.id === n.id) ? { ...n, zIndex: minZ - 1 } : n
+      ),
+    }))
+    get()._pushHistory()
+    const { id, nodes, edges, name, viewport } = get()
+    debouncedSave(id, { name, nodes, edges, viewport })
+  },
+
+  bringForward: () => {
+    const { selectedNodes } = get()
+    if (!selectedNodes.length) return
+    set((state) => ({
+      nodes: state.nodes.map((n) =>
+        selectedNodes.some((s) => s.id === n.id) ? { ...n, zIndex: (n.zIndex || 0) + 1 } : n
+      ),
+    }))
+    get()._pushHistory()
+    const { id, nodes, edges, name, viewport } = get()
+    debouncedSave(id, { name, nodes, edges, viewport })
+  },
+
+  sendBackward: () => {
+    const { selectedNodes } = get()
+    if (!selectedNodes.length) return
+    set((state) => ({
+      nodes: state.nodes.map((n) =>
+        selectedNodes.some((s) => s.id === n.id) ? { ...n, zIndex: (n.zIndex || 0) - 1 } : n
+      ),
+    }))
+    get()._pushHistory()
+    const { id, nodes, edges, name, viewport } = get()
+    debouncedSave(id, { name, nodes, edges, viewport })
+  },
 }))
 
 export default useDiagramStore

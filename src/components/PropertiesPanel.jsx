@@ -3,10 +3,21 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
+  AlignStartHorizontal,
+  AlignCenterHorizontal,
+  AlignEndHorizontal,
+  AlignStartVertical,
+  AlignCenterVertical,
+  AlignEndVertical,
+  BringToFront,
+  SendToBack,
+  ArrowUpToLine,
+  ArrowDownToLine,
   Bold,
   Italic,
   Underline,
   Minus,
+  Layers,
 } from 'lucide-react'
 import useDiagramStore from '../store/diagramStore'
 
@@ -26,21 +37,21 @@ const PRESET_COLORS = [
 const STROKE_WIDTHS = [1, 2, 3, 4, 6]
 const FONT_SIZES = [10, 11, 12, 13, 14, 16, 18, 20, 24, 28, 32]
 const STROKE_STYLES = [
-  { value: 'solid', label: '—' },
+  { value: 'solid',  label: '—'   },
   { value: 'dashed', label: '- -' },
   { value: 'dotted', label: '···' },
 ]
-
 const ARROW_TYPES = [
   { value: 'filled', label: 'Filled' },
-  { value: 'open', label: 'Open' },
+  { value: 'open',   label: 'Open'   },
+]
+const PATH_TYPES = [
+  { value: 'smoothstep', label: 'Curved'   },
+  { value: 'bezier',     label: 'Bezier'   },
+  { value: 'straight',   label: 'Straight' },
 ]
 
-const PATH_TYPES = [
-  { value: 'smoothstep', label: 'Curved' },
-  { value: 'bezier', label: 'Bezier' },
-  { value: 'straight', label: 'Straight' },
-]
+// ─── Primitives ──────────────────────────────────────────────────────────────
 
 function Label({ children }) {
   return <div className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide mb-1">{children}</div>
@@ -55,12 +66,18 @@ function Section({ title, children }) {
   )
 }
 
-function ColorInput({ value, onChange, label }) {
+function ColorInput({ value, onChange }) {
   return (
     <div className="flex items-center gap-2">
       <div
         className="relative w-6 h-6 rounded cursor-pointer border border-gray-200 overflow-hidden shrink-0"
-        style={{ background: value === 'transparent' ? 'linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%), linear-gradient(45deg, #ddd 25%, white 25%, white 75%, #ddd 75%)' : value, backgroundSize: '8px 8px, 8px 8px', backgroundPosition: '0 0, 4px 4px' }}
+        style={{
+          background: value === 'transparent'
+            ? 'linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%), linear-gradient(45deg, #ddd 25%, white 25%, white 75%, #ddd 75%)'
+            : value,
+          backgroundSize: '8px 8px, 8px 8px',
+          backgroundPosition: '0 0, 4px 4px',
+        }}
       >
         <input
           type="color"
@@ -94,18 +111,30 @@ function ToggleButton({ active, onClick, children, title }) {
   )
 }
 
-// ─── Node properties ────────────────────────────────────────────────────────
+// ─── Layer controls (shared) ──────────────────────────────────────────────────
 
-function NodeProperties({ node }) {
-  const updateNodeData = useDiagramStore((s) => s.updateNodeData)
-  const data = node.data
-  const isCloud = data.shapeType?.startsWith('aws-') || data.shapeType?.startsWith('gcp-')
+function LayerSection() {
+  const bringToFront = useDiagramStore((s) => s.bringToFront)
+  const sendToBack   = useDiagramStore((s) => s.sendToBack)
+  const bringForward = useDiagramStore((s) => s.bringForward)
+  const sendBackward = useDiagramStore((s) => s.sendBackward)
+  return (
+    <Section title="Layer">
+      <div className="flex gap-1">
+        <ToggleButton onClick={sendToBack}   title="Send to back">   <SendToBack size={13} /></ToggleButton>
+        <ToggleButton onClick={sendBackward} title="Send backward">  <ArrowDownToLine size={13} /></ToggleButton>
+        <ToggleButton onClick={bringForward} title="Bring forward">  <ArrowUpToLine size={13} /></ToggleButton>
+        <ToggleButton onClick={bringToFront} title="Bring to front"> <BringToFront size={13} /></ToggleButton>
+      </div>
+    </Section>
+  )
+}
 
-  const update = useCallback((patch) => updateNodeData(node.id, patch), [node.id, updateNodeData])
+// ─── Shared node data sections (Color, Border, Opacity, Text) ────────────────
 
+function NodeDataSections({ data, update, isCloud }) {
   return (
     <>
-      {/* Preset colors */}
       {!isCloud && (
         <Section title="Color">
           <div className="flex flex-wrap gap-1.5 mb-2">
@@ -115,10 +144,7 @@ function NodeProperties({ node }) {
                 title={c.label}
                 onClick={() => update({ fillColor: c.fill, strokeColor: c.stroke })}
                 className="w-5 h-5 rounded border-2 transition-transform hover:scale-110"
-                style={{
-                  background: c.fill,
-                  borderColor: c.stroke,
-                }}
+                style={{ background: c.fill, borderColor: c.stroke }}
               />
             ))}
           </div>
@@ -131,7 +157,6 @@ function NodeProperties({ node }) {
         </Section>
       )}
 
-      {/* Border */}
       {!isCloud && (
         <Section title="Border">
           <div className="space-y-2">
@@ -175,14 +200,10 @@ function NodeProperties({ node }) {
         </Section>
       )}
 
-      {/* Opacity */}
       <Section title="Opacity">
         <div className="flex items-center gap-2">
           <input
-            type="range"
-            min={0}
-            max={1}
-            step={0.05}
+            type="range" min={0} max={1} step={0.05}
             value={data.opacity ?? 1}
             onChange={(e) => update({ opacity: parseFloat(e.target.value) })}
             className="flex-1 accent-primary-500"
@@ -193,19 +214,15 @@ function NodeProperties({ node }) {
         </div>
       </Section>
 
-      {/* Text */}
       <Section title="Text">
         <div className="space-y-2">
-          {/* Font size */}
           <div>
             <Label>Size</Label>
             <div className="flex items-center gap-1.5">
               <button
                 onClick={() => update({ fontSize: Math.max(8, (data.fontSize || 13) - 1) })}
                 className="w-6 h-6 rounded bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center text-sm font-bold"
-              >
-                −
-              </button>
+              >−</button>
               <select
                 value={data.fontSize || 13}
                 onChange={(e) => update({ fontSize: parseInt(e.target.value) })}
@@ -216,13 +233,9 @@ function NodeProperties({ node }) {
               <button
                 onClick={() => update({ fontSize: Math.min(72, (data.fontSize || 13) + 1) })}
                 className="w-6 h-6 rounded bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center text-sm font-bold"
-              >
-                +
-              </button>
+              >+</button>
             </div>
           </div>
-
-          {/* Font style */}
           <div>
             <Label>Style</Label>
             <div className="flex gap-1">
@@ -230,93 +243,39 @@ function NodeProperties({ node }) {
                 active={data.fontWeight === 'bold' || data.fontWeight === '700'}
                 onClick={() => update({ fontWeight: (data.fontWeight === 'bold' || data.fontWeight === '700') ? '400' : 'bold' })}
                 title="Bold"
-              >
-                <Bold size={13} />
-              </ToggleButton>
+              ><Bold size={13} /></ToggleButton>
               <ToggleButton
                 active={data.fontStyle === 'italic'}
                 onClick={() => update({ fontStyle: data.fontStyle === 'italic' ? 'normal' : 'italic' })}
                 title="Italic"
-              >
-                <Italic size={13} />
-              </ToggleButton>
+              ><Italic size={13} /></ToggleButton>
               <ToggleButton
                 active={data.textDecoration === 'underline'}
                 onClick={() => update({ textDecoration: data.textDecoration === 'underline' ? 'none' : 'underline' })}
                 title="Underline"
-              >
-                <Underline size={13} />
-              </ToggleButton>
+              ><Underline size={13} /></ToggleButton>
             </div>
           </div>
-
-          {/* Alignment */}
           <div>
             <Label>Align</Label>
             <div className="flex gap-1">
               {[
-                { value: 'left', icon: <AlignLeft size={13} /> },
+                { value: 'left',   icon: <AlignLeft size={13} />   },
                 { value: 'center', icon: <AlignCenter size={13} /> },
-                { value: 'right', icon: <AlignRight size={13} /> },
+                { value: 'right',  icon: <AlignRight size={13} />  },
               ].map(({ value, icon }) => (
                 <ToggleButton
                   key={value}
                   active={(data.textAlign || 'center') === value}
                   onClick={() => update({ textAlign: value })}
                   title={value}
-                >
-                  {icon}
-                </ToggleButton>
+                >{icon}</ToggleButton>
               ))}
             </div>
           </div>
-
-          {/* Text color */}
           <div>
             <Label>Color</Label>
             <ColorInput value={data.textColor || '#111827'} onChange={(v) => update({ textColor: v })} />
-          </div>
-        </div>
-      </Section>
-
-      {/* Position / size */}
-      <Section title="Layout">
-        <div className="grid grid-cols-2 gap-1.5 text-xs">
-          <div>
-            <Label>Width</Label>
-            <input
-              type="number"
-              value={Math.round(node.measured?.width || node.width || 160)}
-              readOnly
-              className="w-full bg-gray-50 border border-gray-200 rounded px-2 py-1 outline-none text-gray-500"
-            />
-          </div>
-          <div>
-            <Label>Height</Label>
-            <input
-              type="number"
-              value={Math.round(node.measured?.height || node.height || 80)}
-              readOnly
-              className="w-full bg-gray-50 border border-gray-200 rounded px-2 py-1 outline-none text-gray-500"
-            />
-          </div>
-          <div>
-            <Label>X</Label>
-            <input
-              type="number"
-              value={Math.round(node.position?.x || 0)}
-              readOnly
-              className="w-full bg-gray-50 border border-gray-200 rounded px-2 py-1 outline-none text-gray-500"
-            />
-          </div>
-          <div>
-            <Label>Y</Label>
-            <input
-              type="number"
-              value={Math.round(node.position?.y || 0)}
-              readOnly
-              className="w-full bg-gray-50 border border-gray-200 rounded px-2 py-1 outline-none text-gray-500"
-            />
           </div>
         </div>
       </Section>
@@ -324,12 +283,94 @@ function NodeProperties({ node }) {
   )
 }
 
-// ─── Edge properties ────────────────────────────────────────────────────────
+// ─── Single node properties ───────────────────────────────────────────────────
+
+function NodeProperties({ node }) {
+  const updateNodeData = useDiagramStore((s) => s.updateNodeData)
+  const data    = node.data
+  const isCloud = data.shapeType?.startsWith('aws-') || data.shapeType?.startsWith('gcp-')
+  const update  = useCallback((patch) => updateNodeData(node.id, patch), [node.id, updateNodeData])
+
+  return (
+    <>
+      <LayerSection />
+      <NodeDataSections data={data} update={update} isCloud={isCloud} />
+      <Section title="Layout">
+        <div className="grid grid-cols-2 gap-1.5 text-xs">
+          {[
+            { label: 'Width',  value: Math.round(node.measured?.width  || node.width  || 160) },
+            { label: 'Height', value: Math.round(node.measured?.height || node.height || 80)  },
+            { label: 'X',      value: Math.round(node.position?.x || 0) },
+            { label: 'Y',      value: Math.round(node.position?.y || 0) },
+          ].map(({ label, value }) => (
+            <div key={label}>
+              <Label>{label}</Label>
+              <input
+                type="number" value={value} readOnly
+                className="w-full bg-gray-50 border border-gray-200 rounded px-2 py-1 outline-none text-gray-500"
+              />
+            </div>
+          ))}
+        </div>
+      </Section>
+    </>
+  )
+}
+
+// ─── Multi-node properties ────────────────────────────────────────────────────
+
+const ALIGN_ACTIONS = [
+  { type: 'left',     icon: <AlignStartVertical size={14} />,    title: 'Align left edges'         },
+  { type: 'center-h', icon: <AlignCenterVertical size={14} />,   title: 'Align horizontal centers' },
+  { type: 'right',    icon: <AlignEndVertical size={14} />,      title: 'Align right edges'        },
+  { type: 'top',      icon: <AlignStartHorizontal size={14} />,  title: 'Align top edges'          },
+  { type: 'center-v', icon: <AlignCenterHorizontal size={14} />, title: 'Align vertical centers'   },
+  { type: 'bottom',   icon: <AlignEndHorizontal size={14} />,    title: 'Align bottom edges'       },
+]
+
+function MultiNodeProperties({ selectedNodes, allNodes }) {
+  const alignNodes              = useDiagramStore((s) => s.alignNodes)
+  const updateSelectedNodesData = useDiagramStore((s) => s.updateSelectedNodesData)
+
+  const firstNode = allNodes.find((n) => selectedNodes.some((s) => s.id === n.id))
+  const data      = firstNode?.data || {}
+  const isCloud   = data.shapeType?.startsWith('aws-') || data.shapeType?.startsWith('gcp-')
+
+  return (
+    <>
+      <LayerSection />
+
+      <Section title="Align">
+        <div className="space-y-1.5">
+          <div>
+            <Label>Horizontal</Label>
+            <div className="flex gap-1">
+              {ALIGN_ACTIONS.slice(0, 3).map(({ type, icon, title }) => (
+                <ToggleButton key={type} onClick={() => alignNodes(type)} title={title}>{icon}</ToggleButton>
+              ))}
+            </div>
+          </div>
+          <div>
+            <Label>Vertical</Label>
+            <div className="flex gap-1">
+              {ALIGN_ACTIONS.slice(3).map(({ type, icon, title }) => (
+                <ToggleButton key={type} onClick={() => alignNodes(type)} title={title}>{icon}</ToggleButton>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      <NodeDataSections data={data} update={updateSelectedNodesData} isCloud={isCloud} />
+    </>
+  )
+}
+
+// ─── Edge properties ──────────────────────────────────────────────────────────
 
 function EdgeProperties({ edge }) {
   const updateEdgeData = useDiagramStore((s) => s.updateEdgeData)
   const data = edge.data || {}
-
   const update = useCallback((patch) => updateEdgeData(edge.id, patch), [edge.id, updateEdgeData])
 
   return (
@@ -348,9 +389,7 @@ function EdgeProperties({ edge }) {
                       ? 'bg-primary-100 text-primary-700 font-medium'
                       : 'hover:bg-gray-50 text-gray-600'
                   }`}
-                >
-                  {p.label}
-                </button>
+                >{p.label}</button>
               ))}
             </div>
           </div>
@@ -366,9 +405,7 @@ function EdgeProperties({ edge }) {
                       ? 'bg-primary-500 text-white'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
-                >
-                  {s.label}
-                </button>
+                >{s.label}</button>
               ))}
             </div>
           </div>
@@ -384,9 +421,7 @@ function EdgeProperties({ edge }) {
                       ? 'bg-primary-500 text-white'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
-                >
-                  {w}
-                </button>
+                >{w}</button>
               ))}
             </div>
           </div>
@@ -407,44 +442,33 @@ function EdgeProperties({ edge }) {
                       ? 'bg-primary-500 text-white'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
-                >
-                  {a.label}
-                </button>
+                >{a.value === 'filled' ? 'Filled' : 'Open'}</button>
               ))}
             </div>
           </div>
           <div className="flex items-center gap-2">
             <input
-              type="checkbox"
-              id="arrow-start"
+              type="checkbox" id="arrow-start"
               checked={!!data.arrowStart}
               onChange={(e) => update({ arrowStart: e.target.checked })}
               className="accent-primary-500"
             />
-            <label htmlFor="arrow-start" className="text-xs text-gray-600 cursor-pointer">
-              Start arrow
-            </label>
+            <label htmlFor="arrow-start" className="text-xs text-gray-600 cursor-pointer">Start arrow</label>
           </div>
           <div className="flex items-center gap-2">
             <input
-              type="checkbox"
-              id="animated"
+              type="checkbox" id="animated"
               checked={!!data.animated}
               onChange={(e) => update({ animated: e.target.checked })}
               className="accent-primary-500"
             />
-            <label htmlFor="animated" className="text-xs text-gray-600 cursor-pointer">
-              Animated
-            </label>
+            <label htmlFor="animated" className="text-xs text-gray-600 cursor-pointer">Animated</label>
           </div>
         </div>
       </Section>
 
       <Section title="Color">
-        <ColorInput
-          value={data.edgeColor || '#6B7280'}
-          onChange={(v) => update({ edgeColor: v })}
-        />
+        <ColorInput value={data.edgeColor || '#6B7280'} onChange={(v) => update({ edgeColor: v })} />
       </Section>
 
       <Section title="Label">
@@ -460,21 +484,21 @@ function EdgeProperties({ edge }) {
   )
 }
 
-// ─── Main PropertiesPanel ──────────────────────────────────────────────────
+// ─── Main PropertiesPanel ─────────────────────────────────────────────────────
 
 export default function PropertiesPanel() {
   const selectedNodes = useDiagramStore((s) => s.selectedNodes)
   const selectedEdges = useDiagramStore((s) => s.selectedEdges)
-  const nodes = useDiagramStore((s) => s.nodes)
-  const edges = useDiagramStore((s) => s.edges)
+  const nodes         = useDiagramStore((s) => s.nodes)
+  const edges         = useDiagramStore((s) => s.edges)
 
-  // Read live data from the nodes/edges arrays so property changes reflect immediately
-  const nodeId = selectedNodes[0]?.id
-  const edgeId = selectedEdges[0]?.id
-  const node = nodeId ? nodes.find((n) => n.id === nodeId) : null
-  const edge = edgeId ? edges.find((e) => e.id === edgeId) : null
+  const multiNode = selectedNodes.length > 1
+  const nodeId    = selectedNodes[0]?.id
+  const edgeId    = selectedEdges[0]?.id
+  const node      = (!multiNode && nodeId) ? nodes.find((n) => n.id === nodeId) : null
+  const edge      = edgeId ? edges.find((e) => e.id === edgeId) : null
 
-  if (!node && !edge) {
+  if (!multiNode && !node && !edge) {
     return (
       <div
         className="bg-white border-l border-gray-200 flex flex-col items-center justify-center text-center px-4"
@@ -495,18 +519,27 @@ export default function PropertiesPanel() {
       className="bg-white border-l border-gray-200 flex flex-col h-full overflow-y-auto"
       style={{ width: 220, minWidth: 220 }}
     >
-      {/* Header */}
-      <div className="px-3 py-2.5 border-b border-gray-100">
-        <p className="text-xs font-semibold text-gray-700">
-          {node ? node.data?.shapeType?.replace('aws-', '').replace('gcp-', '').replace(/-/g, ' ') || 'Shape' : 'Connection'}
-        </p>
-        <p className="text-[10px] text-gray-400">
-          {node ? `ID: ${node.id.slice(0, 12)}…` : `ID: ${edge?.id?.slice(0, 12)}…`}
-        </p>
+      <div className="px-3 py-2.5 border-b border-gray-100 flex items-center gap-2">
+        {multiNode && <Layers size={13} className="text-gray-400 shrink-0" />}
+        <div>
+          <p className="text-xs font-semibold text-gray-700">
+            {multiNode
+              ? `${selectedNodes.length} shapes selected`
+              : node
+                ? node.data?.shapeType?.replace('aws-', '').replace('gcp-', '').replace(/-/g, ' ') || 'Shape'
+                : 'Connection'}
+          </p>
+          {!multiNode && (
+            <p className="text-[10px] text-gray-400">
+              {node ? `ID: ${node.id.slice(0, 12)}…` : `ID: ${edge?.id?.slice(0, 12)}…`}
+            </p>
+          )}
+        </div>
       </div>
 
-      {node && <NodeProperties node={node} />}
-      {edge && !node && <EdgeProperties edge={edge} />}
+      {multiNode  && <MultiNodeProperties selectedNodes={selectedNodes} allNodes={nodes} />}
+      {!multiNode && node && <NodeProperties node={node} />}
+      {!multiNode && edge && !node && <EdgeProperties edge={edge} />}
     </div>
   )
 }

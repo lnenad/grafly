@@ -1,13 +1,15 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 import { ReactFlowProvider } from '@xyflow/react'
 import Toolbar from './components/Toolbar'
 import ShapeLibrary from './components/ShapeLibrary'
 import Canvas from './components/Canvas'
 import PropertiesPanel from './components/PropertiesPanel'
+import ContextMenu from './components/ContextMenu'
 import useDiagramStore from './store/diagramStore'
 
 function App() {
-  const { undo, redo, canUndo, canRedo, deleteSelected } = useDiagramStore()
+  const { undo, redo, canUndo, canRedo, deleteSelected, copySelected, paste } = useDiagramStore()
+  const [contextMenu, setContextMenu] = useState(null)
 
   // Global keyboard shortcuts
   const onKeyDown = useCallback(
@@ -23,11 +25,17 @@ function App() {
       } else if (meta && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
         e.preventDefault()
         redo()
+      } else if (meta && e.key === 'c') {
+        e.preventDefault()
+        copySelected()
+      } else if (meta && e.key === 'v') {
+        e.preventDefault()
+        paste()
       } else if (e.key === 'Delete' || e.key === 'Backspace') {
         deleteSelected()
       }
     },
-    [undo, redo, deleteSelected]
+    [undo, redo, deleteSelected, copySelected, paste]
   )
 
   useEffect(() => {
@@ -48,13 +56,21 @@ function App() {
 
           {/* Center: canvas */}
           <div className="flex-1 relative overflow-hidden">
-            <Canvas />
+            <Canvas onContextMenu={(x, y) => setContextMenu({ x, y })} />
           </div>
 
           {/* Right: properties panel */}
           <PropertiesPanel />
         </div>
       </div>
+
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onClose={() => setContextMenu(null)}
+        />
+      )}
     </ReactFlowProvider>
   )
 }

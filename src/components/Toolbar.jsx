@@ -6,6 +6,7 @@ import {
   Upload,
   Trash2,
   Copy,
+  ClipboardPaste,
   Grid3X3,
   Map,
   Magnet,
@@ -53,7 +54,9 @@ export default function Toolbar() {
     canUndo,
     canRedo,
     deleteSelected,
-    duplicateSelected,
+    copySelected,
+    paste,
+    clipboard,
     showMinimap,
     showGrid,
     snapToGrid,
@@ -155,8 +158,11 @@ export default function Toolbar() {
       <Divider />
 
       {/* Selection actions */}
-      <ToolbarButton tooltip="Duplicate selected" onClick={duplicateSelected} disabled={selectedNodes.length === 0}>
+      <ToolbarButton tooltip="Copy (Ctrl+C)" onClick={copySelected} disabled={!hasSelection}>
         <Copy size={16} />
+      </ToolbarButton>
+      <ToolbarButton tooltip="Paste (Ctrl+V)" onClick={paste} disabled={!clipboard?.nodes?.length}>
+        <ClipboardPaste size={16} />
       </ToolbarButton>
       <ToolbarButton tooltip="Delete selected (Del)" onClick={deleteSelected} disabled={!hasSelection} danger>
         <Trash2 size={16} />

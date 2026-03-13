@@ -16,7 +16,7 @@ import useDiagramStore from '../store/diagramStore'
 const nodeTypes = { shape: ShapeNode }
 const edgeTypes = { custom: CustomEdge }
 
-function CanvasInner() {
+function CanvasInner({ onContextMenu }) {
   const {
     nodes,
     edges,
@@ -27,6 +27,10 @@ function CanvasInner() {
     onSelectionChange,
     addNode,
     deleteSelected,
+    selectNode,
+    selectEdge,
+    selectedNodes,
+    selectedEdges,
     showMinimap,
     showGrid,
     snapToGrid,
@@ -117,6 +121,17 @@ function CanvasInner() {
         connectOnClick={false}
         elevateEdgesOnSelect
         elevateNodesOnSelect
+        onNodeContextMenu={(e, node) => {
+          e.preventDefault()
+          if (!selectedNodes.some((n) => n.id === node.id)) selectNode(node.id)
+          onContextMenu(e.clientX, e.clientY)
+        }}
+        onEdgeContextMenu={(e, edge) => {
+          e.preventDefault()
+          if (!selectedEdges.some((ed) => ed.id === edge.id)) selectEdge(edge.id)
+          onContextMenu(e.clientX, e.clientY)
+        }}
+        onPaneContextMenu={(e) => { e.preventDefault(); onContextMenu(e.clientX, e.clientY) }}
       >
         {showGrid && (
           <Background variant={BackgroundVariant.Dots} gap={20} size={1.5} color="#D1D5DB" />
