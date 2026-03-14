@@ -89,7 +89,7 @@ function ShapeItem({ shape }) {
   const accentColor = shape.defaultData?.accentColor
 
   const onDragStart = useCallback((e) => {
-    e.dataTransfer.setData('application/charty-shape', JSON.stringify(shape))
+    e.dataTransfer.setData('application/grafly-shape', JSON.stringify(shape))
     e.dataTransfer.effectAllowed = 'move'
   }, [shape])
 

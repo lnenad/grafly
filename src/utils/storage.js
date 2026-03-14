@@ -1,5 +1,5 @@
-const STORAGE_KEY = 'charty_diagrams'
-const ACTIVE_KEY = 'charty_active_diagram'
+const STORAGE_KEY = 'grafly_diagrams'
+const ACTIVE_KEY = 'grafly_active_diagram'
 
 export function saveDiagram(id, data) {
   try {

@@ -48,7 +48,7 @@ function CanvasInner({ onContextMenu }) {
 
   const onDrop = useCallback((e) => {
     e.preventDefault()
-    const payload = e.dataTransfer.getData('application/charty-shape')
+    const payload = e.dataTransfer.getData('application/grafly-shape')
     if (!payload) return
 
     const shapeData = JSON.parse(payload)

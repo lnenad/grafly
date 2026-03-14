@@ -102,7 +102,7 @@ function CloudShape({ w, h, shapeType, accentColor, strokeColor, strokeWidth, fi
   const iconFn = AWS_ICONS[shapeType] || GCP_ICONS[shapeType]
   const color = accentColor || '#7B61FF'
   const iconSVG = iconFn ? iconFn(color) : ''
-  const labelReserve = 22                          // px reserved for label at bottom
+  const labelReserve = 26                          // px reserved for label at bottom
   const iconAreaH = h - labelReserve
   const iconSize = Math.min(w * 0.55, iconAreaH * 0.65)
   const iconX = (w - iconSize) / 2
@@ -214,7 +214,7 @@ const ShapeNode = memo(function ShapeNode({ id, data, selected, width, height })
   }
 
   const labelAreaStyle = isCloud
-    ? { position: 'absolute', bottom: 5, left: 0, right: 0, height: 18, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '0 4px' }
+    ? { position: 'absolute', bottom: 7, left: 0, right: 0, height: 20, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '0 4px' }
     : { position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px 10px' }
 
   return (

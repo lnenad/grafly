@@ -1,4 +1,4 @@
-# Charty
+# Grafly
 
 A browser-based diagramming tool built with React and React Flow. Supports drag-and-drop shape libraries, customizable edges, multi-select, alignment, layering, copy/paste, and persistent local storage.
 

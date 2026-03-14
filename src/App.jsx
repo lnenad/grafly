@@ -1,6 +1,7 @@
 import { useEffect, useCallback, useState } from 'react'
 import { ReactFlowProvider } from '@xyflow/react'
 import Toolbar from './components/Toolbar'
+import ProjectsPanel from './components/ProjectsPanel'
 import ShapeLibrary from './components/ShapeLibrary'
 import Canvas from './components/Canvas'
 import PropertiesPanel from './components/PropertiesPanel'
@@ -8,8 +9,12 @@ import ContextMenu from './components/ContextMenu'
 import useDiagramStore from './store/diagramStore'
 
 function App() {
-  const { undo, redo, canUndo, canRedo, deleteSelected, copySelected, paste } = useDiagramStore()
+  const { undo, redo, canUndo, canRedo, deleteSelected, copySelected, paste, darkMode } = useDiagramStore()
   const [contextMenu, setContextMenu] = useState(null)
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', darkMode)
+  }, [darkMode])
 
   // Global keyboard shortcuts
   const onKeyDown = useCallback(
@@ -45,13 +50,14 @@ function App() {
 
   return (
     <ReactFlowProvider>
-      <div className="flex flex-col h-screen w-screen bg-gray-50 overflow-hidden">
+      <div className="flex flex-col h-screen w-screen bg-gray-50 dark:bg-gray-950 overflow-hidden">
         {/* Top toolbar */}
         <Toolbar />
 
         {/* Main content */}
         <div className="flex flex-1 overflow-hidden">
-          {/* Left: shape library */}
+          {/* Left: file manager + shape library */}
+          <ProjectsPanel />
           <ShapeLibrary />
 
           {/* Center: canvas */}
