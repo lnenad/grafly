@@ -103,7 +103,7 @@ function ToggleButton({ active, onClick, children, title }) {
   return (
     <button
       onClick={onClick}
-      title={title}
+      data-tooltip={title}
       className={`flex items-center justify-center w-7 h-7 rounded-md text-xs transition-all ${
         active ? 'bg-primary-100 text-primary-600 dark:bg-primary-900/40 dark:text-primary-400' : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400'
       }`}
@@ -143,7 +143,7 @@ function NodeDataSections({ data, update, isCloud }) {
             {PRESET_COLORS.map((c) => (
               <button
                 key={c.label}
-                title={c.label}
+                data-tooltip={c.label}
                 onClick={() => update({ fillColor: c.fill, strokeColor: c.stroke })}
                 className="w-5 h-5 rounded border-2 transition-transform hover:scale-110"
                 style={{ background: c.fill, borderColor: c.stroke }}
@@ -168,6 +168,7 @@ function NodeDataSections({ data, update, isCloud }) {
                 {STROKE_WIDTHS.map((w) => (
                   <button
                     key={w}
+                    data-tooltip={`${w}px`}
                     onClick={() => update({ strokeWidth: w })}
                     className={`flex-1 h-6 rounded text-xs font-medium transition-all ${
                       (data.strokeWidth || 2) === w
@@ -186,6 +187,7 @@ function NodeDataSections({ data, update, isCloud }) {
                 {STROKE_STYLES.map((s) => (
                   <button
                     key={s.value}
+                    data-tooltip={s.value.charAt(0).toUpperCase() + s.value.slice(1)}
                     onClick={() => update({ strokeStyle: s.value })}
                     className={`flex-1 h-6 rounded text-xs transition-all ${
                       (data.strokeStyle || 'solid') === s.value
@@ -222,6 +224,7 @@ function NodeDataSections({ data, update, isCloud }) {
             <Label>Size</Label>
             <div className="flex items-center gap-1.5">
               <button
+                data-tooltip="Decrease size"
                 onClick={() => update({ fontSize: Math.max(8, (data.fontSize || 13) - 1) })}
                 className="w-6 h-6 rounded bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center text-sm font-bold"
               >−</button>
@@ -233,6 +236,7 @@ function NodeDataSections({ data, update, isCloud }) {
                 {FONT_SIZES.map((s) => <option key={s} value={s}>{s}px</option>)}
               </select>
               <button
+                data-tooltip="Increase size"
                 onClick={() => update({ fontSize: Math.min(72, (data.fontSize || 13) + 1) })}
                 className="w-6 h-6 rounded bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center text-sm font-bold"
               >+</button>
@@ -262,15 +266,15 @@ function NodeDataSections({ data, update, isCloud }) {
             <Label>Align</Label>
             <div className="flex gap-1">
               {[
-                { value: 'left',   icon: <AlignLeft size={13} />   },
-                { value: 'center', icon: <AlignCenter size={13} /> },
-                { value: 'right',  icon: <AlignRight size={13} />  },
-              ].map(({ value, icon }) => (
+                { value: 'left',   title: 'Align left',   icon: <AlignLeft size={13} />   },
+                { value: 'center', title: 'Align center', icon: <AlignCenter size={13} /> },
+                { value: 'right',  title: 'Align right',  icon: <AlignRight size={13} />  },
+              ].map(({ value, title, icon }) => (
                 <ToggleButton
                   key={value}
                   active={(data.textAlign || 'center') === value}
                   onClick={() => update({ textAlign: value })}
-                  title={value}
+                  title={title}
                 >{icon}</ToggleButton>
               ))}
             </div>
@@ -401,6 +405,7 @@ function EdgeProperties({ edge }) {
               {STROKE_STYLES.map((s) => (
                 <button
                   key={s.value}
+                  data-tooltip={s.value.charAt(0).toUpperCase() + s.value.slice(1)}
                   onClick={() => update({ edgeStyle: s.value })}
                   className={`flex-1 h-6 rounded text-xs transition-all ${
                     (data.edgeStyle || 'solid') === s.value
@@ -417,6 +422,7 @@ function EdgeProperties({ edge }) {
               {[1, 2, 3, 4].map((w) => (
                 <button
                   key={w}
+                  data-tooltip={`${w}px`}
                   onClick={() => update({ edgeWidth: w })}
                   className={`flex-1 h-6 rounded text-xs font-medium transition-all ${
                     (data.edgeWidth || 2) === w
@@ -518,7 +524,7 @@ export default function PropertiesPanel() {
 
   return (
     <div
-      className="bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 flex flex-col h-full overflow-y-auto"
+      className="tooltip-up bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 flex flex-col h-full overflow-y-auto"
       style={{ width: 220, minWidth: 220 }}
     >
       <div className="px-3 py-2.5 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2">

@@ -93,7 +93,7 @@ export default function ProjectsPanel() {
         <button
           onClick={() => setCollapsed(false)}
           className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-          title="Show files"
+          data-tooltip="Show files"
         >
           <ChevronRight size={14} />
         </button>
@@ -111,14 +111,14 @@ export default function ProjectsPanel() {
           <button
             onClick={() => newDiagram()}
             className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-            title="New diagram"
+            data-tooltip="New diagram"
           >
             <Plus size={14} />
           </button>
           <button
             onClick={() => setCollapsed(true)}
             className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-            title="Collapse"
+            data-tooltip="Collapse"
           >
             <ChevronLeft size={14} />
           </button>
@@ -171,7 +171,7 @@ export default function ProjectsPanel() {
                 <button
                   onClick={(e) => handleDelete(e, d.id)}
                   className="shrink-0 mt-0.5 p-0.5 rounded opacity-0 group-hover:opacity-100 text-gray-300 dark:text-gray-600 hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
-                  title="Delete"
+                  data-tooltip="Delete diagram"
                 >
                   <Trash2 size={11} />
                 </button>
