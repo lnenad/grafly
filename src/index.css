@@ -144,6 +144,32 @@
   font-weight: inherit;
 }
 
+/* ─── Dark mode — React Flow overrides ─── */
+.dark .react-flow__controls-button {
+  background: #1f2937 !important;
+  border-bottom: 1px solid #374151 !important;
+  color: #d1d5db !important;
+}
+.dark .react-flow__controls-button:hover {
+  background: #374151 !important;
+}
+.dark .react-flow__controls {
+  border: 1px solid #374151 !important;
+}
+.dark .react-flow__minimap {
+  border: 1px solid #374151 !important;
+  background: #111827 !important;
+}
+.dark .react-flow__minimap-mask {
+  fill: rgba(17,24,39,0.6);
+}
+.dark .react-flow__edge-path {
+  stroke: #6b7280;
+}
+.dark .react-flow__node-resizer .react-flow__resize-control.line {
+  border-color: #7B61FF !important;
+}
+
 /* ─── Scrollbar styling ─── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }

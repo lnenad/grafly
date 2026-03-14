@@ -228,16 +228,14 @@ const useDiagramStore = create((set, get) => ({
   },
 
   // ── Settings ──
-  darkMode: JSON.parse(localStorage.getItem('grafly_dark') || 'false'),
+  theme: localStorage.getItem('grafly_theme') || 'auto',
+  isDark: false,
+  setTheme: (theme) => { localStorage.setItem('grafly_theme', theme); set({ theme }) },
+  setIsDark: (isDark) => set({ isDark }),
   setEdgeType: (edgeType) => set({ edgeType }),
   toggleMinimap: () => set((s) => ({ showMinimap: !s.showMinimap })),
   toggleGrid: () => set((s) => ({ showGrid: !s.showGrid })),
   toggleSnapToGrid: () => set((s) => ({ snapToGrid: !s.snapToGrid })),
-  toggleDarkMode: () => set((s) => {
-    const next = !s.darkMode
-    localStorage.setItem('grafly_dark', JSON.stringify(next))
-    return { darkMode: next }
-  }),
 
   // ── Selection ──
   onSelectionChange: ({ nodes, edges }) => {

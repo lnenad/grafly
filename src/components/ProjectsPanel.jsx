@@ -89,10 +89,10 @@ export default function ProjectsPanel() {
   // ── Collapsed strip ──────────────────────────────────────────────────────
   if (collapsed) {
     return (
-      <div className="flex flex-col items-center bg-white border-r border-gray-200 py-2 w-9 shrink-0">
+      <div className="flex flex-col items-center bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 py-2 w-9 shrink-0">
         <button
           onClick={() => setCollapsed(false)}
-          className="p-1.5 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600"
+          className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
           title="Show files"
         >
           <ChevronRight size={14} />
@@ -103,21 +103,21 @@ export default function ProjectsPanel() {
 
   // ── Expanded panel ───────────────────────────────────────────────────────
   return (
-    <div className="flex flex-col bg-white border-r border-gray-200 w-52 shrink-0 overflow-hidden">
+    <div className="flex flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 w-52 shrink-0 overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2.5 border-b border-gray-100">
+      <div className="flex items-center justify-between px-3 py-2.5 border-b border-gray-100 dark:border-gray-800">
         <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Files</span>
         <div className="flex items-center gap-0.5">
           <button
             onClick={() => newDiagram()}
-            className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors"
+            className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
             title="New diagram"
           >
             <Plus size={14} />
           </button>
           <button
             onClick={() => setCollapsed(true)}
-            className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors"
+            className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
             title="Collapse"
           >
             <ChevronLeft size={14} />
@@ -136,8 +136,8 @@ export default function ProjectsPanel() {
               onDoubleClick={(e) => startRename(e, d)}
               className={`group flex items-start gap-2 px-2.5 py-2 mx-1 my-0.5 rounded-lg cursor-pointer select-none transition-colors ${
                 isActive
-                  ? 'bg-indigo-50 text-indigo-700'
-                  : 'hover:bg-gray-50 text-gray-700'
+                  ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300'
+                  : 'hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-400'
               }`}
             >
               <FileText
@@ -157,12 +157,12 @@ export default function ProjectsPanel() {
                       if (e.key === 'Escape') setEditingId(null)
                     }}
                     onClick={(e) => e.stopPropagation()}
-                    className="w-full text-xs bg-white border border-indigo-300 rounded px-1 py-0.5 outline-none"
+                    className="w-full text-xs bg-white dark:bg-gray-800 border border-indigo-300 dark:border-indigo-700 rounded px-1 py-0.5 outline-none text-gray-800 dark:text-gray-200"
                   />
                 ) : (
                   <>
                     <p className="text-xs font-medium truncate leading-tight">{d.name}</p>
-                    <p className="text-[10px] text-gray-400 mt-0.5">{formatDate(d.updatedAt)}</p>
+                    <p className="text-[10px] text-gray-400 dark:text-gray-600 mt-0.5">{formatDate(d.updatedAt)}</p>
                   </>
                 )}
               </div>
@@ -170,7 +170,7 @@ export default function ProjectsPanel() {
               {diagrams.length > 1 && editingId !== d.id && (
                 <button
                   onClick={(e) => handleDelete(e, d.id)}
-                  className="shrink-0 mt-0.5 p-0.5 rounded opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-400 hover:bg-red-50 transition-colors"
+                  className="shrink-0 mt-0.5 p-0.5 rounded opacity-0 group-hover:opacity-100 text-gray-300 dark:text-gray-600 hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
                   title="Delete"
                 >
                   <Trash2 size={11} />

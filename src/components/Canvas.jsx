@@ -18,6 +18,7 @@ const nodeTypes = { shape: ShapeNode }
 const edgeTypes = { custom: CustomEdge }
 
 function CanvasInner({ onContextMenu }) {
+  const isDark = useDiagramStore((s) => s.isDark)
   const {
     nodes,
     edges,
@@ -138,7 +139,7 @@ function CanvasInner({ onContextMenu }) {
         onPaneContextMenu={(e) => { e.preventDefault(); onContextMenu(e.clientX, e.clientY) }}
       >
         {showGrid && (
-          <Background variant={BackgroundVariant.Dots} gap={20} size={1.5} color="#D1D5DB" />
+          <Background variant={BackgroundVariant.Dots} gap={20} size={1.5} color={isDark ? '#374151' : '#D1D5DB'} />
         )}
         <Controls showInteractive={false} style={{ bottom: 24, left: 24 }} />
         {showMinimap && (

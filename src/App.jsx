@@ -9,12 +9,23 @@ import ContextMenu from './components/ContextMenu'
 import useDiagramStore from './store/diagramStore'
 
 function App() {
-  const { undo, redo, canUndo, canRedo, deleteSelected, copySelected, paste, darkMode } = useDiagramStore()
+  const { undo, redo, canUndo, canRedo, deleteSelected, copySelected, paste, theme, setIsDark } = useDiagramStore()
   const [contextMenu, setContextMenu] = useState(null)
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', darkMode)
-  }, [darkMode])
+    const apply = (dark) => {
+      document.documentElement.classList.toggle('dark', dark)
+      setIsDark(dark)
+    }
+    if (theme === 'dark') { apply(true); return }
+    if (theme === 'light') { apply(false); return }
+    // auto — follow system
+    const mq = window.matchMedia('(prefers-color-scheme: dark)')
+    apply(mq.matches)
+    const handler = (e) => apply(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [theme, setIsDark])
 
   // Global keyboard shortcuts
   const onKeyDown = useCallback(

@@ -60,7 +60,7 @@ function Label({ children }) {
 
 function Section({ title, children }) {
   return (
-    <div className="px-3 py-3 border-b border-gray-100">
+    <div className="px-3 py-3 border-b border-gray-100 dark:border-gray-800">
       {title && <Label>{title}</Label>}
       {children}
     </div>
@@ -92,7 +92,7 @@ function ColorInput({ value, onChange }) {
         type="text"
         value={value || ''}
         onChange={(e) => onChange(e.target.value)}
-        className="flex-1 text-xs bg-gray-50 border border-gray-200 rounded-md px-2 py-1 outline-none focus:border-primary-400 font-mono"
+        className="flex-1 text-xs bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md px-2 py-1 outline-none focus:border-primary-400 font-mono text-gray-800 dark:text-gray-200"
         placeholder="#000000"
       />
     </div>
@@ -105,7 +105,7 @@ function ToggleButton({ active, onClick, children, title }) {
       onClick={onClick}
       title={title}
       className={`flex items-center justify-center w-7 h-7 rounded-md text-xs transition-all ${
-        active ? 'bg-primary-100 text-primary-600' : 'hover:bg-gray-100 text-gray-500'
+        active ? 'bg-primary-100 text-primary-600 dark:bg-primary-900/40 dark:text-primary-400' : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400'
       }`}
     >
       {children}
@@ -172,7 +172,7 @@ function NodeDataSections({ data, update, isCloud }) {
                     className={`flex-1 h-6 rounded text-xs font-medium transition-all ${
                       (data.strokeWidth || 2) === w
                         ? 'bg-primary-500 text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
                     }`}
                   >
                     {w}
@@ -190,7 +190,7 @@ function NodeDataSections({ data, update, isCloud }) {
                     className={`flex-1 h-6 rounded text-xs transition-all ${
                       (data.strokeStyle || 'solid') === s.value
                         ? 'bg-primary-500 text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
                     }`}
                   >
                     {s.label}
@@ -228,7 +228,7 @@ function NodeDataSections({ data, update, isCloud }) {
               <select
                 value={data.fontSize || 13}
                 onChange={(e) => update({ fontSize: parseInt(e.target.value) })}
-                className="flex-1 text-xs bg-gray-50 border border-gray-200 rounded-md px-1 py-1 outline-none focus:border-primary-400"
+                className="flex-1 text-xs bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md px-1 py-1 outline-none focus:border-primary-400 text-gray-700 dark:text-gray-300"
               >
                 {FONT_SIZES.map((s) => <option key={s} value={s}>{s}px</option>)}
               </select>
@@ -309,7 +309,7 @@ function NodeProperties({ node }) {
               <Label>{label}</Label>
               <input
                 type="number" value={value} readOnly
-                className="w-full bg-gray-50 border border-gray-200 rounded px-2 py-1 outline-none text-gray-500"
+                className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded px-2 py-1 outline-none text-gray-500 dark:text-gray-500"
               />
             </div>
           ))}
@@ -388,8 +388,8 @@ function EdgeProperties({ edge }) {
                   onClick={() => update({ pathType: p.value })}
                   className={`text-left px-2 py-1.5 rounded-lg text-xs transition-all ${
                     (data.pathType || 'smoothstep') === p.value
-                      ? 'bg-primary-100 text-primary-700 font-medium'
-                      : 'hover:bg-gray-50 text-gray-600'
+                      ? 'bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-400 font-medium'
+                      : 'hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400'
                   }`}
                 >{p.label}</button>
               ))}
@@ -405,7 +405,7 @@ function EdgeProperties({ edge }) {
                   className={`flex-1 h-6 rounded text-xs transition-all ${
                     (data.edgeStyle || 'solid') === s.value
                       ? 'bg-primary-500 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
                   }`}
                 >{s.label}</button>
               ))}
@@ -421,7 +421,7 @@ function EdgeProperties({ edge }) {
                   className={`flex-1 h-6 rounded text-xs font-medium transition-all ${
                     (data.edgeWidth || 2) === w
                       ? 'bg-primary-500 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
                   }`}
                 >{w}</button>
               ))}
@@ -442,7 +442,7 @@ function EdgeProperties({ edge }) {
                   className={`flex-1 h-6 rounded text-xs transition-all ${
                     (data.arrowType || 'filled') === a.value
                       ? 'bg-primary-500 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
                   }`}
                 >{a.value === 'filled' ? 'Filled' : 'Open'}</button>
               ))}
@@ -455,7 +455,7 @@ function EdgeProperties({ edge }) {
               onChange={(e) => update({ arrowStart: e.target.checked })}
               className="accent-primary-500"
             />
-            <label htmlFor="arrow-start" className="text-xs text-gray-600 cursor-pointer">Start arrow</label>
+            <label htmlFor="arrow-start" className="text-xs text-gray-600 dark:text-gray-400 cursor-pointer">Start arrow</label>
           </div>
           <div className="flex items-center gap-2">
             <input
@@ -464,7 +464,7 @@ function EdgeProperties({ edge }) {
               onChange={(e) => update({ animated: e.target.checked })}
               className="accent-primary-500"
             />
-            <label htmlFor="animated" className="text-xs text-gray-600 cursor-pointer">Animated</label>
+            <label htmlFor="animated" className="text-xs text-gray-600 dark:text-gray-400 cursor-pointer">Animated</label>
           </div>
         </div>
       </Section>
@@ -479,7 +479,7 @@ function EdgeProperties({ edge }) {
           value={data.label || ''}
           onChange={(e) => update({ label: e.target.value })}
           placeholder="Add label..."
-          className="w-full text-xs bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 outline-none focus:border-primary-400"
+          className="w-full text-xs bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1.5 outline-none focus:border-primary-400 text-gray-700 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-600"
         />
       </Section>
     </>
@@ -503,10 +503,10 @@ export default function PropertiesPanel() {
   if (!multiNode && !node && !edge) {
     return (
       <div
-        className="bg-white border-l border-gray-200 flex flex-col items-center justify-center text-center px-4"
+        className="bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center px-4"
         style={{ width: 220, minWidth: 220 }}
       >
-        <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center mb-3">
+        <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-3">
           <Minus size={18} className="text-gray-400" />
         </div>
         <p className="text-xs text-gray-400 leading-relaxed">
@@ -518,13 +518,13 @@ export default function PropertiesPanel() {
 
   return (
     <div
-      className="bg-white border-l border-gray-200 flex flex-col h-full overflow-y-auto"
+      className="bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 flex flex-col h-full overflow-y-auto"
       style={{ width: 220, minWidth: 220 }}
     >
-      <div className="px-3 py-2.5 border-b border-gray-100 flex items-center gap-2">
+      <div className="px-3 py-2.5 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2">
         {multiNode && <Layers size={13} className="text-gray-400 shrink-0" />}
         <div>
-          <p className="text-xs font-semibold text-gray-700">
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">
             {multiNode
               ? `${selectedNodes.length} shapes selected`
               : node

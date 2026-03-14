@@ -97,7 +97,7 @@ function ShapeItem({ shape }) {
     <div
       draggable
       onDragStart={onDragStart}
-      className="flex flex-col items-center gap-1 p-2 rounded-xl cursor-grab active:cursor-grabbing hover:bg-gray-50 transition-colors select-none"
+      className="flex flex-col items-center gap-1 p-2 rounded-xl cursor-grab active:cursor-grabbing hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors select-none"
       title={shape.name}
     >
       <svg
@@ -116,7 +116,7 @@ function ShapeItem({ shape }) {
           />
         )}
       </svg>
-      <span className="text-[10px] text-gray-500 text-center leading-tight max-w-[48px] truncate">{shape.name}</span>
+      <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight max-w-[48px] truncate">{shape.name}</span>
     </div>
   )
 }
@@ -130,7 +130,7 @@ function CategorySection({ title, shapes, defaultOpen = false }) {
     <div>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between px-3 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:text-gray-700 transition-colors"
+        className="w-full flex items-center justify-between px-3 py-1.5 text-xs font-semibold text-gray-500 dark:text-gray-500 uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
       >
         <span>{title}</span>
         {open ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
@@ -177,19 +177,19 @@ export default function ShapeLibrary() {
 
   return (
     <div
-      className="flex flex-col bg-white border-r border-gray-200 h-full"
+      className="flex flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 h-full"
       style={{ width: 180, minWidth: 180, boxShadow: '1px 0 0 rgba(0,0,0,0.04)' }}
     >
       {/* Tabs */}
-      <div className="flex border-b border-gray-200 px-2 pt-2 gap-1">
+      <div className="flex border-b border-gray-200 dark:border-gray-700 px-2 pt-2 gap-1">
         {TABS.map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
             className={`flex-1 pb-1.5 text-xs font-medium rounded-t transition-colors ${
               tab === t
-                ? 'text-primary-600 border-b-2 border-primary-500'
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'text-primary-600 dark:text-primary-400 border-b-2 border-primary-500'
+                : 'text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
             }`}
           >
             {t}
@@ -199,14 +199,14 @@ export default function ShapeLibrary() {
 
       {/* Search */}
       <div className="px-2 py-2">
-        <div className="flex items-center gap-1.5 bg-gray-100 rounded-lg px-2 py-1.5">
+        <div className="flex items-center gap-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg px-2 py-1.5">
           <Search size={12} className="text-gray-400 shrink-0" />
           <input
             type="text"
             placeholder="Search..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="bg-transparent text-xs text-gray-700 outline-none w-full placeholder-gray-400"
+            className="bg-transparent text-xs text-gray-700 dark:text-gray-300 outline-none w-full placeholder-gray-400 dark:placeholder-gray-600"
           />
         </div>
       </div>
@@ -215,7 +215,7 @@ export default function ShapeLibrary() {
       <div className="flex-1 overflow-y-auto">
         {filtered ? (
           <div>
-            <div className="px-3 py-1 text-[10px] text-gray-400 uppercase tracking-wider font-semibold">
+            <div className="px-3 py-1 text-[10px] text-gray-400 dark:text-gray-600 uppercase tracking-wider font-semibold">
               Results ({filtered.length})
             </div>
             <div className="grid grid-cols-3 gap-0 px-1">
@@ -224,7 +224,7 @@ export default function ShapeLibrary() {
               ))}
             </div>
             {filtered.length === 0 && (
-              <div className="text-center py-8 text-xs text-gray-400">No shapes found</div>
+              <div className="text-center py-8 text-xs text-gray-400 dark:text-gray-600">No shapes found</div>
             )}
           </div>
         ) : tab === 'Basic' ? (

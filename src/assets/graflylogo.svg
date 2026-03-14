@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <defs>
+    <style>
+      .grafly-line {
+        stroke: #1E293B; /* Deep Slate Gray */
+        stroke-width: 4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+      
+      /* The invisible stroke that punches the narrower 3D holes */
+      .knockout-stroke {
+        stroke: black;
+        stroke-width: 8; /* Narrowed from 12 for tighter, cleaner gaps */
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+    </style>
+
+    <mask id="depth-mask">
+      <rect x="0" y="0" width="100" height="100" fill="white" />
+      
+      <polygon class="knockout-stroke" points="35,40 65,35 60,70 25,60" />
+      <line class="knockout-stroke" x1="35" y1="40" x2="60" y2="70" />
+    </mask>
+  </defs>
+
+  <polygon class="grafly-line" points="50,10 85,30 85,70 50,90 15,70 15,30" />
+
+  <g mask="url(#depth-mask)" class="grafly-line">
+    <line x1="15" y1="30" x2="35" y2="40" />
+    <line x1="15" y1="30" x2="25" y2="60" />
+    <line x1="50" y1="10" x2="65" y2="35" />
+    <line x1="85" y1="30" x2="65" y2="35" />
+    <line x1="85" y1="70" x2="60" y2="70" />
+    <line x1="50" y1="90" x2="25" y2="60" />
+    <line x1="15" y1="70" x2="25" y2="60" />
+  </g>
+
+  <g class="grafly-line">
+    <polygon points="35,40 65,35 60,70 25,60" />
+    <line x1="35" y1="40" x2="60" y2="70" />
+
+    <line x1="50" y1="10" x2="35" y2="40" />
+    <line x1="50" y1="90" x2="60" y2="70" />
+    <line x1="85" y1="70" x2="65" y2="35" />
+  </g>
+</svg>

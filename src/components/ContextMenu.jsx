@@ -9,10 +9,10 @@ function MenuItem({ onClick, children, danger, disabled }) {
       disabled={disabled}
       className={`w-full text-left px-3 py-1.5 text-xs flex items-center gap-2 transition-colors ${
         disabled
-          ? 'opacity-40 cursor-not-allowed text-gray-400'
+          ? 'opacity-40 cursor-not-allowed text-gray-400 dark:text-gray-600'
           : danger
-            ? 'text-red-500 hover:bg-red-50'
-            : 'text-gray-700 hover:bg-gray-50'
+            ? 'text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40'
+            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
       }`}
     >
       {children}
@@ -21,12 +21,12 @@ function MenuItem({ onClick, children, danger, disabled }) {
 }
 
 function MenuDivider() {
-  return <div className="my-1 border-t border-gray-100" />
+  return <div className="my-1 border-t border-gray-100 dark:border-gray-800" />
 }
 
 function MenuLabel({ children }) {
   return (
-    <div className="px-3 pt-1 pb-0.5 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+    <div className="px-3 pt-1 pb-0.5 text-[10px] font-semibold text-gray-400 dark:text-gray-600 uppercase tracking-wide">
       {children}
     </div>
   )
@@ -85,7 +85,7 @@ export default function ContextMenu({ x, y, onClose }) {
     <div
       ref={ref}
       style={{ position: 'fixed', left, top, zIndex: 9999, minWidth: menuW }}
-      className="bg-white border border-gray-200 rounded-xl shadow-xl py-1 select-none"
+      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl py-1 select-none"
     >
       {/* Clipboard */}
       {hasSelection && <MenuItem onClick={act(copySelected)}>Copy</MenuItem>}
