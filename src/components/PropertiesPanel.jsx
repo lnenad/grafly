@@ -1,4 +1,6 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+import { HexColorPicker } from 'react-colorful'
 import {
   AlignLeft,
   AlignCenter,
@@ -67,34 +69,119 @@ function Section({ title, children }) {
   )
 }
 
+const PICKER_PRESETS = [
+  '#EEF2FF', '#818CF8', '#4ADE80', '#FB923C', '#F472B6',
+  '#FACC15', '#38BDF8', '#A78BFA', '#FB7185', '#374151',
+  '#ffffff', '#000000',
+]
+
 function ColorInput({ value, onChange }) {
+  const [open, setOpen] = useState(false)
+  const [pos, setPos]   = useState({ top: 0, left: 0 })
+  const swatchRef  = useRef(null)
+  const dropdownRef = useRef(null)
+
+  const pickerColor = /^#[0-9A-Fa-f]{6}$/.test(value) ? value : '#ffffff'
+
+  const [hex, setHex] = useState(value || '')
+  useEffect(() => { setHex(value || '') }, [value])
+
+  const commitHex = (raw) => {
+    const v = raw.startsWith('#') ? raw : `#${raw}`
+    if (/^#[0-9A-Fa-f]{6}$/.test(v)) onChange(v)
+  }
+
+  // Position the portal dropdown below the swatch
+  useLayoutEffect(() => {
+    if (!open || !swatchRef.current) return
+    const r = swatchRef.current.getBoundingClientRect()
+    const PICKER_W = 204
+    // Flip left if it would overflow the viewport
+    const left = r.left + PICKER_W > window.innerWidth ? r.right - PICKER_W : r.left
+    setPos({ top: r.bottom + 6, left })
+  }, [open])
+
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return
+    const handler = (e) => {
+      if (
+        swatchRef.current  && !swatchRef.current.contains(e.target) &&
+        dropdownRef.current && !dropdownRef.current.contains(e.target)
+      ) setOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
+  const isTransparent = value === 'transparent'
+
   return (
     <div className="flex items-center gap-2">
-      <div
-        className="relative w-6 h-6 rounded cursor-pointer border border-gray-200 overflow-hidden shrink-0"
+      {/* Swatch button */}
+      <button
+        ref={swatchRef}
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-6 h-6 rounded border border-gray-300 dark:border-gray-600 shrink-0 cursor-pointer transition-transform hover:scale-110"
         style={{
-          backgroundColor: value === 'transparent' ? 'white' : value,
-          backgroundImage: value === 'transparent'
-            ? 'linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%), linear-gradient(45deg, #ddd 25%, white 25%, white 75%, #ddd 75%)'
+          backgroundColor: isTransparent ? 'white' : value,
+          backgroundImage: isTransparent
+            ? 'linear-gradient(45deg,#ddd 25%,transparent 25%,transparent 75%,#ddd 75%),linear-gradient(45deg,#ddd 25%,white 25%,white 75%,#ddd 75%)'
             : 'none',
-          backgroundSize: '8px 8px, 8px 8px',
-          backgroundPosition: '0 0, 4px 4px',
+          backgroundSize: '8px 8px,8px 8px',
+          backgroundPosition: '0 0,4px 4px',
         }}
-      >
-        <input
-          type="color"
-          value={value === 'transparent' ? '#ffffff' : value}
-          onChange={(e) => onChange(e.target.value)}
-          className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
-        />
-      </div>
+      />
+      {/* Hex text */}
       <input
         type="text"
-        value={value || ''}
-        onChange={(e) => onChange(e.target.value)}
+        value={hex}
+        onChange={(e) => { setHex(e.target.value); commitHex(e.target.value) }}
+        onBlur={() => setHex(value || '')}
         className="flex-1 text-xs bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md px-2 py-1 outline-none focus:border-primary-400 font-mono text-gray-800 dark:text-gray-200"
         placeholder="#000000"
+        spellCheck={false}
       />
+
+      {/* Portal dropdown — escapes overflow clipping */}
+      {open && createPortal(
+        <div
+          ref={dropdownRef}
+          style={{ position: 'fixed', top: pos.top, left: pos.left, zIndex: 9990, width: 204 }}
+          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl p-3 flex flex-col gap-2.5"
+          onMouseDown={(e) => e.stopPropagation()}
+        >
+          <HexColorPicker color={pickerColor} onChange={onChange} style={{ width: '100%', height: 148 }} />
+
+          {/* Preset swatches */}
+          <div className="flex flex-wrap gap-1.5">
+            {PICKER_PRESETS.map((c) => (
+              <button
+                key={c}
+                type="button"
+                data-tooltip={c}
+                onClick={() => { onChange(c); setOpen(false) }}
+                className="w-5 h-5 rounded border border-gray-200 dark:border-gray-700 transition-transform hover:scale-110 shrink-0"
+                style={{ backgroundColor: c }}
+              />
+            ))}
+            {/* Transparent */}
+            <button
+              type="button"
+              data-tooltip="Transparent"
+              onClick={() => { onChange('transparent'); setOpen(false) }}
+              className="w-5 h-5 rounded border border-gray-200 dark:border-gray-700 transition-transform hover:scale-110 shrink-0"
+              style={{
+                backgroundImage: 'linear-gradient(45deg,#ddd 25%,transparent 25%,transparent 75%,#ddd 75%),linear-gradient(45deg,#ddd 25%,white 25%,white 75%,#ddd 75%)',
+                backgroundSize: '6px 6px,6px 6px',
+                backgroundPosition: '0 0,3px 3px',
+              }}
+            />
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   )
 }

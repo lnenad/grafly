@@ -3,10 +3,79 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Grafly – Diagram Tool</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- ── Primary SEO ─────────────────────────────────────────────────── -->
+    <title>Grafly – Free Online Diagram & Flowchart Tool</title>
+    <meta name="description" content="Grafly is a free browser-based diagramming tool. Create flowcharts, AWS architecture diagrams, GCP cloud diagrams and more. No account needed — everything saves locally." />
+    <meta name="keywords" content="diagram tool, flowchart maker, online diagram, AWS architecture diagram, GCP diagram, cloud architecture, free diagram tool, diagramming software, flowchart software" />
+    <meta name="author" content="Grafly" />
+    <link rel="canonical" href="https://grafly.io/" />
+
+    <!-- ── Open Graph (Facebook, LinkedIn, Slack, …) ──────────────────── -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:url"         content="https://grafly.io/" />
+    <meta property="og:site_name"   content="Grafly" />
+    <meta property="og:title"       content="Grafly – Free Online Diagram & Flowchart Tool" />
+    <meta property="og:description" content="Create flowcharts, AWS and GCP architecture diagrams right in your browser. Drag-and-drop shapes, connect nodes, export JSON. No account required." />
+    <meta property="og:image"       content="https://grafly.io/og-image.png" />
+    <meta property="og:image:width"  content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt"    content="Grafly diagramming tool interface" />
+    <meta property="og:locale"      content="en_US" />
+
+    <!-- ── Twitter / X Card ───────────────────────────────────────────── -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:site"        content="@grafly_io" />
+    <meta name="twitter:title"       content="Grafly – Free Online Diagram & Flowchart Tool" />
+    <meta name="twitter:description" content="Create flowcharts, AWS and GCP architecture diagrams right in your browser. No account required." />
+    <meta name="twitter:image"       content="https://grafly.io/og-image.png" />
+    <meta name="twitter:image:alt"   content="Grafly diagramming tool interface" />
+
+    <!-- ── Structured data (JSON-LD) ──────────────────────────────────── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Grafly",
+      "url": "https://grafly.io",
+      "description": "Free browser-based diagramming tool for flowcharts, AWS and GCP architecture diagrams. No account required.",
+      "applicationCategory": "DesignApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Flowchart creation",
+        "AWS architecture diagrams",
+        "GCP cloud diagrams",
+        "Drag-and-drop interface",
+        "JSON export and import",
+        "Dark mode",
+        "Multiple diagrams"
+      ],
+      "screenshot": "https://grafly.io/og-image.png",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Grafly",
+        "url": "https://grafly.io"
+      }
+    }
+    </script>
+
+    <!-- ── Favicon & manifest ─────────────────────────────────────────── -->
+    <link rel="icon"             href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon"             href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest"         href="/site.webmanifest" />
+    <meta name="theme-color" content="#7B61FF" />
+
+    <!-- ── Fonts ──────────────────────────────────────────────────────── -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
     <style>
       * { box-sizing: border-box; margin: 0; padding: 0; }
       html, body, #root { width: 100%; height: 100%; overflow: hidden; }

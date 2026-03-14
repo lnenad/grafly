@@ -1,0 +1,7 @@
+# Copy this file to terraform.tfvars and fill in your values.
+# terraform.tfvars is gitignored — never commit it if it contains secrets.
+
+domain_name = "grafly.io"
+aws_region  = "us-east-1"
+environment = "prod"
+price_class = "PriceClass_100"

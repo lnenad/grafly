@@ -1,4 +1,6 @@
 import { useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import diagramFormatRaw from "../../GRAFLY_DIAGRAM_FORMAT.md?raw";
 import {
   Undo2,
   Redo2,
@@ -11,11 +13,16 @@ import {
   Map,
   Magnet,
   FilePlus,
+  FileJson,
   ChevronDown,
   ScanLine,
   Sun,
   Moon,
   Monitor,
+  X,
+  Sparkles,
+  Check,
+  Copy as CopyIcon,
 } from "lucide-react";
 import useDiagramStore from "../store/diagramStore";
 import { downloadDiagram, uploadDiagram } from "../utils/fileUtils";
@@ -99,6 +106,35 @@ export default function Toolbar() {
   const [nameEditing, setNameEditing] = useState(false);
   const [nameVal, setNameVal] = useState(name);
   const [edgeDropdown, setEdgeDropdown] = useState(false);
+  const [jsonModal, setJsonModal] = useState(false);
+  const [jsonText, setJsonText] = useState("");
+  const [jsonError, setJsonError] = useState("");
+  const [aiModal, setAiModal] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const copyDocs = () => {
+    navigator.clipboard.writeText(diagramFormatRaw).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  const openJsonModal = () => {
+    setJsonText("");
+    setJsonError("");
+    setJsonModal(true);
+  };
+
+  const importJson = () => {
+    try {
+      const data = JSON.parse(jsonText.trim());
+      if (!data.nodes || !data.edges) throw new Error('Missing required fields: "nodes" and "edges"');
+      loadFromData(data);
+      setJsonModal(false);
+    } catch (e) {
+      setJsonError(e.message);
+    }
+  };
 
   const handleDownload = () =>
     downloadDiagram(
@@ -166,6 +202,9 @@ export default function Toolbar() {
       <Divider />
       <ToolbarButton tooltip="New diagram" onClick={newDiagram}>
         <FilePlus size={16} />
+      </ToolbarButton>
+      <ToolbarButton tooltip="Import from JSON" onClick={openJsonModal}>
+        <FileJson size={16} />
       </ToolbarButton>
       <Divider />
 
@@ -265,6 +304,14 @@ export default function Toolbar() {
       >
         <Magnet size={16} />
       </ToolbarButton>
+      <button
+        onClick={() => setAiModal(true)}
+        data-tooltip="AI diagram format reference"
+        className="flex items-center gap-1 h-8 px-2.5 rounded-lg text-xs font-semibold transition-all cursor-pointer bg-gradient-to-r from-violet-500 to-indigo-500 text-white hover:from-violet-600 hover:to-indigo-600 shadow-sm shrink-0"
+      >
+        <Sparkles size={12} />
+        AI
+      </button>
 
       <div className="flex-1" />
 
@@ -302,6 +349,139 @@ export default function Toolbar() {
           />
         </label>
       </ToolbarButton>
+
+      {/* AI format reference modal */}
+      {aiModal && createPortal(
+        <div
+          className="fixed inset-0 z-[9996] flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.55)" }}
+          onMouseDown={(e) => { if (e.target === e.currentTarget) setAiModal(false) }}
+        >
+          <div
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col"
+            style={{ width: 720, maxHeight: "85vh" }}
+            onKeyDown={(e) => { if (e.key === "Escape") setAiModal(false) }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800 shrink-0">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center shrink-0">
+                  <Sparkles size={13} className="text-white" />
+                </div>
+                <div>
+                  <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Grafly Diagram Format Reference</h2>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Pass this to an LLM to generate diagrams for Grafly.</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={copyDocs}
+                  className={`flex items-center gap-1.5 h-7 px-3 rounded-lg text-xs font-medium transition-all ${
+                    copied
+                      ? "bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400"
+                      : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  {copied ? <Check size={12} /> : <CopyIcon size={12} />}
+                  {copied ? "Copied!" : "Copy all"}
+                </button>
+                <button
+                  onClick={() => setAiModal(false)}
+                  className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                >
+                  <X size={15} />
+                </button>
+              </div>
+            </div>
+
+            {/* Content */}
+            <pre
+              className="flex-1 overflow-y-auto px-5 py-4 text-xs font-mono text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap break-words select-all"
+            >
+              {diagramFormatRaw}
+            </pre>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* JSON import modal */}
+      {jsonModal && createPortal(
+        <div
+          className="fixed inset-0 z-[9995] flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.45)" }}
+          onMouseDown={(e) => { if (e.target === e.currentTarget) setJsonModal(false) }}
+        >
+          <div
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col"
+            style={{ width: 560, maxHeight: "80vh" }}
+            onKeyDown={(e) => { if (e.key === "Escape") setJsonModal(false) }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800">
+              <div>
+                <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Import from JSON</h2>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                  Paste a Grafly diagram JSON to load it as a new diagram.{" "}
+                  <button
+                    onClick={() => setAiModal(true)}
+                    className="text-violet-500 hover:text-violet-600 dark:text-violet-400 hover:underline inline-flex items-center gap-0.5"
+                  >
+                    <Sparkles size={10} />
+                    View format reference
+                  </button>
+                </p>
+              </div>
+              <button
+                onClick={() => setJsonModal(false)}
+                className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                <X size={15} />
+              </button>
+            </div>
+
+            {/* Textarea */}
+            <div className="flex-1 overflow-hidden px-5 py-4">
+              <textarea
+                autoFocus
+                value={jsonText}
+                onChange={(e) => { setJsonText(e.target.value); setJsonError("") }}
+                placeholder={'{\n  "name": "My Diagram",\n  "nodes": [],\n  "edges": []\n}'}
+                spellCheck={false}
+                className={`w-full h-64 resize-none text-xs font-mono bg-gray-50 dark:bg-gray-800 border rounded-xl px-3 py-3 outline-none transition-colors text-gray-800 dark:text-gray-200 placeholder-gray-300 dark:placeholder-gray-600 ${
+                  jsonError
+                    ? "border-red-400 dark:border-red-600 focus:border-red-400"
+                    : "border-gray-200 dark:border-gray-700 focus:border-primary-400 dark:focus:border-primary-500"
+                }`}
+              />
+              {jsonError && (
+                <p className="mt-2 text-xs text-red-500 dark:text-red-400 flex items-start gap-1.5">
+                  <span className="font-semibold shrink-0">Error:</span>
+                  <span>{jsonError}</span>
+                </p>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-gray-100 dark:border-gray-800">
+              <button
+                onClick={() => setJsonModal(false)}
+                className="px-4 py-1.5 text-xs font-medium rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={importJson}
+                disabled={!jsonText.trim()}
+                className="px-4 py-1.5 text-xs font-semibold rounded-lg bg-primary-500 text-white hover:bg-primary-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                Import
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }

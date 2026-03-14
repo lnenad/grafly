@@ -170,6 +170,23 @@
   border-color: #7B61FF !important;
 }
 
+/* ─── react-colorful overrides ─── */
+.react-colorful {
+  border-radius: 8px !important;
+}
+.react-colorful__saturation {
+  border-radius: 6px 6px 0 0 !important;
+}
+.react-colorful__hue {
+  border-radius: 6px !important;
+  height: 12px !important;
+}
+.react-colorful__pointer {
+  width: 18px !important;
+  height: 18px !important;
+  border-width: 2px !important;
+}
+
 /* ─── Scrollbar styling ─── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
