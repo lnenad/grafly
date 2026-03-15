@@ -18,14 +18,14 @@ There is no routing — the app is a single view.
 
 ```
 src/
-  App.jsx                    # Root layout, theme application, global keyboard shortcuts, context menu state
+  App.jsx                    # Root layout, theme, keyboard shortcuts, ?d= URL param detection
   index.css                  # Tailwind base + React Flow overrides + tooltip CSS + react-colorful overrides
   components/
     Canvas.jsx               # ReactFlow wrapper, drag-drop, grid, minimap, context menu wiring
-    Toolbar.jsx              # Top bar: file ops, undo/redo, copy/paste, view toggles, JSON import, AI docs modal
-    ShapeLibrary.jsx         # Left panel: shape palette (drag source), search, category sections
+    Toolbar.jsx              # Top bar: file ops, undo/redo, copy/paste, view toggles, JSON import, AI docs modal, share modal
+    ShapeLibrary.jsx         # Left panel: shape palette (drag source + tap-to-insert on mobile), search, collapsible
     ProjectsPanel.jsx        # Collapsible left sidebar: create/rename/delete/switch diagrams
-    PropertiesPanel.jsx      # Right panel: node/edge properties, layer controls, alignment
+    PropertiesPanel.jsx      # Right panel: node/edge properties, layer controls, alignment, collapsible
     ContextMenu.jsx          # Right-click context menu (portal-rendered)
     GraflyLogo.jsx           # SVG logo component using currentColor for dark mode
     edges/
@@ -42,6 +42,8 @@ src/
     storage.js               # localStorage helpers: saveDiagram, loadDiagram, getAllDiagrams, …
     fileUtils.js             # downloadDiagram (JSON), uploadDiagram (JSON parse), exportPng
     styleConstants.js        # All shared styling tokens — always import from here
+    urlCodec.js              # encodeDiagram / decodeDiagram — URL-safe diagram compression
+    urlCodec.test.js         # Vitest tests for the codec (35 tests)
 ```
 
 ---
@@ -117,8 +119,11 @@ Z-index layers used:
 | Layer | z-index |
 |-------|---------|
 | Context menu | 9999 |
+| About modal | 9997 |
 | AI modal | 9996 |
 | JSON import modal | 9995 |
+| Share modal | 9994 |
+| Edit-mode warning modal | 9993 |
 | Color picker dropdown | 9990 |
 | Tooltip | 1000 |
 
@@ -213,6 +218,10 @@ For **smoothstep** edges: the waypoint is clamped to the axis-aligned bounding b
 **Problem:** If the stored JSON is truncated (e.g. due to a previous bug or storage quota), `JSON.parse` throws and the app silently returns an empty diagram list.
 **Mitigation:** `getAllDiagrams()` wraps the parse in a `try/catch` and returns `{}` on failure. If diagrams appear missing, inspect `localStorage.getItem('grafly_diagrams')` directly in DevTools.
 
+### accentColor XSS via dangerouslySetInnerHTML (fixed)
+**Problem:** Cloud shape icon functions embed the color string directly into SVG markup via template literals (e.g. `` `fill="${color}"` ``). `accentColor` flows from the URL codec's color palette into `dangerouslySetInnerHTML`, so a crafted URL with `accentColor = '"><script>...'` could inject arbitrary HTML.
+**Fix:** `decodeDiagram` in `urlCodec.js` applies `sanitizeColor()` to every entry in the palette before any field is set. Only CSS hex colors matching `/^#[0-9A-Fa-f]{3,8}$/` are accepted — everything else is replaced with `#000000`. Since all colors are stored by palette index, a single check at decode time covers all color fields (`fillColor`, `strokeColor`, `textColor`, `accentColor`, `edgeColor`).
+
 ---
 
 ## Deployment
@@ -229,6 +238,101 @@ aws cloudfront create-invalidation \
 ```
 
 The distribution ID is available via `terraform output cloudfront_distribution_id`.
+
+---
+
+## URL sharing
+
+Diagrams can be shared via a `?d=` query parameter. The full diagram is compressed into the URL — no backend or storage required.
+
+### Codec (`src/utils/urlCodec.js`)
+
+Two-layer pipeline:
+
+1. **Key compression** — all verbose keys replaced with 1–2 char aliases (`fillColor` → `f`, `strokeColor` → `k`, etc.), enum strings replaced with integers (`"solid"` → `0`, `"right"` → `1`), default values omitted entirely, node/edge IDs shortened to `n0`/`n1`/`e0`/`e1`, colors deduplicated into a shared palette array, positions stored as `[x, y]` arrays.
+2. **LZ-string** — lossless compression tuned for repetitive JSON. Output is URL-safe with no base64 padding.
+
+**Result:** 100 nodes + 100 edges compresses to ~5,050 bytes — well under the 8,192-byte CloudFront URI limit.
+
+### API
+
+```js
+import { encodeDiagram, decodeDiagram } from './utils/urlCodec'
+
+const encoded = encodeDiagram(diagram)   // → URL-safe string
+const diagram = decodeDiagram(encoded)   // → full diagram object
+```
+
+### URL detection and view modes (`App.jsx`)
+
+Two module-level flags are captured before params are stripped:
+- `isSharedUrl` — URL contains `?d=`
+- `isEditMode` — URL contains both `?d=` and `?edit=1`
+
+On mount, if `?d=` is present:
+- Decodes and loads the diagram via `loadFromData`
+- Calls `triggerFitView()` so all nodes are centered in the viewport
+- Strips `?d=` and `?edit=` from the URL via `history.replaceState` (so refresh doesn't re-import)
+- Silently ignores malformed params
+
+**View mode** (`isSharedUrl && !isEditMode`): hides all UI chrome (toolbar, sidebars, panels). Shows only the canvas and a single "Edit diagram" button.
+
+**Edit diagram button**: encodes the current diagram and opens `?d=<encoded>&edit=1` in a **new tab** — the viewer's diagram is never modified.
+
+**Edit link** (`isEditMode`): starts with full editing UI and immediately shows a dismissible modal explaining that this is a local copy and changes won't affect the original. Users are directed to the Share button to re-share.
+
+### Share modal (`Toolbar.jsx`)
+
+The `Share2` toolbar button opens a modal with:
+- The full shareable URL (ready to copy)
+- A pre-formatted `<iframe>` embed snippet
+
+### Defaults omitted during compression
+
+Node fields omitted when at their default value:
+
+| Field | Default |
+|-------|---------|
+| `zIndex` | `0` |
+| `strokeWidth` | `2` |
+| `strokeStyle` | `"solid"` |
+| `fontWeight` | `"600"` |
+| `fontStyle` | `"normal"` |
+| `textDecoration` | `"none"` |
+| `textAlign` | `"center"` |
+| `fontSize` | `13` |
+| `opacity` | `1` |
+| `label` | `""` |
+
+Edge fields omitted when at their default value: `edgeStyle` (solid), `edgeWidth` (2), `animated` (false), `pathType` (smoothstep), `arrowType` (filled), `arrowStart` (false), `waypoint` (null), `label` ("").
+
+---
+
+## Testing
+
+Tests use **Vitest**. The test file lives alongside the module it covers.
+
+```bash
+npm test          # run once
+npm run test:watch  # watch mode
+```
+
+### `src/utils/urlCodec.test.js` (35 tests)
+
+| Group | What is covered |
+|-------|----------------|
+| Round-trip basics | Single node, metadata (name, viewport, id) |
+| All enum variants | Every value of `strokeStyle`, `pathType`, `arrowType`, `textAlign`, `sourceHandle`/`targetHandle`, `fontWeight`, `fontStyle`, `textDecoration` |
+| Defaults omission | Verifies that compressed output contains no verbose key names |
+| Color palette | Verifies repeated colors appear once in `cp` array, all nodes reference by index |
+| Cloud shapes | `isCloudShape`, `accentColor`, non-default `strokeWidth`/`fontSize` |
+| Waypoint | `{x, y}` round-trip and `null` |
+| Numeric non-defaults | `zIndex`, `opacity`, `fontSize`, `strokeWidth` |
+| Edge references | Source/target IDs remain consistent after ID shortening |
+| Error handling | Corrupted input throws, wrong codec version throws with message |
+| **100-node benchmark** | 100 nodes + 100 edges encodes to < 8,192 bytes; full round-trip verified |
+
+When adding new fields to the diagram format, add a corresponding round-trip test and verify the benchmark still passes.
 
 ---
 

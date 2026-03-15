@@ -22,13 +22,20 @@ const DEFAULT_DIAGRAM_ID = 'default'
 function loadInitial() {
   const activeId = getActiveDiagram() || DEFAULT_DIAGRAM_ID
   const saved = loadDiagram(activeId)
-  return {
+  const initial = {
     id: activeId,
     name: saved?.name || 'Untitled Diagram',
     nodes: saved?.nodes || [],
     edges: saved?.edges || [],
     viewport: saved?.viewport || { x: 0, y: 0, zoom: 1 },
   }
+  // Persist immediately so the sidebar shows this diagram on first load
+  // instead of appearing empty until the first canvas interaction saves it.
+  if (!saved) {
+    saveDiagram(initial.id, { name: initial.name, nodes: initial.nodes, edges: initial.edges, viewport: initial.viewport })
+    setActiveDiagram(initial.id)
+  }
+  return initial
 }
 
 const initial = loadInitial()
@@ -227,6 +234,10 @@ const useDiagramStore = create((set, get) => ({
     saveDiagram(id, { name, nodes: [], edges: [], viewport: { x: 0, y: 0, zoom: 1 } })
     setActiveDiagram(id)
   },
+
+  // ── Fit view trigger (incremented to signal Canvas to call fitView()) ──
+  fitViewTrigger: 0,
+  triggerFitView: () => set((s) => ({ fitViewTrigger: s.fitViewTrigger + 1 })),
 
   // ── Settings ──
   theme: localStorage.getItem('grafly_theme') || 'auto',

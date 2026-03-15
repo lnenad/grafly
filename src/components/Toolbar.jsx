@@ -24,9 +24,12 @@ import {
   Check,
   Copy as CopyIcon,
   Info,
+  Share2,
+  Link,
 } from "lucide-react";
 import useDiagramStore from "../store/diagramStore";
 import { downloadDiagram, uploadDiagram } from "../utils/fileUtils";
+import { encodeDiagram } from "../utils/urlCodec";
 import GraflyLogo from "./GraflyLogo";
 
 const EDGE_TYPES = [
@@ -114,10 +117,35 @@ export default function Toolbar() {
   const [jsonError, setJsonError] = useState("");
   const [aiModal, setAiModal] = useState(false);
   const [aboutModal, setAboutModal] = useState(() => !localStorage.getItem('grafly_visited'));
+  const [shareModal, setShareModal] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
+  const [shareCopied, setShareCopied] = useState(false);
 
   const closeAbout = () => {
     localStorage.setItem('grafly_visited', '1');
     setAboutModal(false);
+  };
+
+  const openShareModal = () => {
+    const { id, name, nodes, edges, viewport } = useDiagramStore.getState();
+    try {
+      const encoded = encodeDiagram({ id, name, nodes, edges, viewport });
+      const url = new URL(window.location.href);
+      url.search = '';
+      url.searchParams.set('d', encoded);
+      setShareUrl(url.toString());
+      setShareCopied(false);
+      setShareModal(true);
+    } catch (e) {
+      alert('Failed to generate share URL: ' + e.message);
+    }
+  };
+
+  const copyShareUrl = () => {
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    });
   };
   const [copied, setCopied] = useState(false);
 
@@ -369,9 +397,79 @@ export default function Toolbar() {
         </label>
       </ToolbarButton>
       <Divider />
+      <ToolbarButton tooltip="Share / embed diagram" onClick={openShareModal}>
+        <Share2 size={16} />
+      </ToolbarButton>
       <ToolbarButton tooltip="About Grafly" onClick={() => setAboutModal(true)}>
         <Info size={16} />
       </ToolbarButton>
+
+      {/* Share modal */}
+      {shareModal && createPortal(
+        <div
+          className="fixed inset-0 z-[9994] flex items-center justify-center p-4"
+          style={{ background: 'rgba(0,0,0,0.55)' }}
+          onMouseDown={(e) => { if (e.target === e.currentTarget) setShareModal(false) }}
+        >
+          <div
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden"
+            style={{ width: 560 }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800">
+              <div className="flex items-center gap-2">
+                <Share2 size={15} className="text-primary-500" />
+                <div>
+                  <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Share diagram</h2>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                    The full diagram is encoded in the URL — no account needed.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShareModal(false)}
+                className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                <X size={15} />
+              </button>
+            </div>
+
+            {/* URL row */}
+            <div className="px-5 py-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <div className="flex-1 flex items-center gap-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 min-w-0">
+                  <Link size={12} className="text-gray-400 shrink-0" />
+                  <span className="text-xs font-mono text-gray-600 dark:text-gray-400 truncate">{shareUrl}</span>
+                </div>
+                <button
+                  onClick={copyShareUrl}
+                  className={`shrink-0 flex items-center gap-1.5 h-9 px-3 rounded-xl text-xs font-semibold transition-all ${
+                    shareCopied
+                      ? 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400'
+                      : 'bg-primary-500 hover:bg-primary-600 text-white'
+                  }`}
+                >
+                  {shareCopied ? <Check size={13} /> : <CopyIcon size={13} />}
+                  {shareCopied ? 'Copied!' : 'Copy'}
+                </button>
+              </div>
+
+              {/* Embed snippet */}
+              <div>
+                <p className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1.5">Embed (iframe)</p>
+                <div className="relative">
+                  <pre className="text-[11px] font-mono text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 overflow-x-auto whitespace-pre select-all">{`<iframe\n  src="${shareUrl}"\n  width="100%" height="600"\n  frameborder="0"\n/>`}</pre>
+                </div>
+              </div>
+
+              <p className="text-[11px] text-gray-400 dark:text-gray-500">
+                Anyone with this link can view and edit a copy of the diagram. Their changes stay local and won't affect yours.
+              </p>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
 
       {/* About modal */}
       {aboutModal && createPortal(

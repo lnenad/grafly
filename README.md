@@ -40,6 +40,11 @@
 - Projects panel to switch, rename, and delete diagrams
 - Export / import as JSON · Download as PNG
 
+**Sharing**
+- Share any diagram via a single URL — the full diagram is encoded directly in the `?d=` query parameter, no backend required
+- Anyone with the link gets their own editable copy
+- Ready-to-paste `<iframe>` embed snippet for Notion, Confluence, Linear, and similar tools
+
 **Quality of life**
 - Dark / light / auto theme
 - Tooltips on every control
@@ -59,6 +64,12 @@ npm run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173).
+
+### Run tests
+
+```bash
+npm test
+```
 
 ### Build for production
 

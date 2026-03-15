@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useEffect } from 'react'
 import {
   ReactFlow,
   Background,
@@ -41,9 +41,19 @@ function CanvasInner({ onContextMenu }) {
     gridSize,
     edgeType,
     viewport,
+    fitViewTrigger,
   } = useDiagramStore()
 
   const reactFlowInstance = useReactFlow()
+
+  // Fit all nodes into view when triggered (e.g. after loading a shared diagram)
+  useEffect(() => {
+    if (fitViewTrigger === 0) return
+    const id = requestAnimationFrame(() => {
+      reactFlowInstance.fitView({ padding: 0.15, duration: 300 })
+    })
+    return () => cancelAnimationFrame(id)
+  }, [fitViewTrigger, reactFlowInstance])
 
   const onDragOver = useCallback((e) => {
     e.preventDefault()
