@@ -101,6 +101,16 @@ The `infra/` directory contains Terraform for deploying to AWS:
 - ACM TLS certificate with Route 53 DNS validation
 - SPA routing handled via CloudFront custom error responses
 
+After `terraform apply`, deploy the built assets:
+
+```bash
+npm run build
+aws s3 sync dist/ s3://grafly.io --delete
+aws cloudfront create-invalidation \
+  --distribution-id $(cd infra && terraform output -raw cloudfront_distribution_id) \
+  --paths "/*"
+```
+
 ---
 
 ## Contributing

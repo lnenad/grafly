@@ -89,14 +89,14 @@ export default function ProjectsPanel() {
   // ── Collapsed strip ──────────────────────────────────────────────────────
   if (collapsed) {
     return (
-      <div className="flex flex-col items-center bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 py-2 w-9 shrink-0">
-        <button
-          onClick={() => setCollapsed(false)}
-          className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-          data-tooltip="Show files"
-        >
+      <div
+        onClick={() => setCollapsed(false)}
+        className="flex flex-col items-center bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 py-2 w-9 shrink-0 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors"
+        data-tooltip="Show files"
+      >
+        <div className="p-1.5 text-gray-400">
           <ChevronRight size={14} />
-        </button>
+        </div>
       </div>
     )
   }

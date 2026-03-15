@@ -14,6 +14,8 @@ import CustomEdge from './edges/CustomEdge'
 import useDiagramStore from '../store/diagramStore'
 import { COLOR_PRIMARY } from '../utils/styleConstants'
 
+const isTouchDevice = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
+
 const nodeTypes = { shape: ShapeNode }
 const edgeTypes = { custom: CustomEdge }
 
@@ -161,10 +163,10 @@ function CanvasInner({ onContextMenu }) {
         }}>
           <div style={{ fontSize: 40, opacity: 0.18 }}>⬡</div>
           <p style={{ fontSize: 14, color: '#9CA3AF', fontWeight: 500 }}>
-            Drag shapes from the panel to get started
+            {isTouchDevice ? 'Tap a shape in the panel to add it' : 'Drag shapes from the panel to get started'}
           </p>
           <p style={{ fontSize: 12, color: '#D1D5DB' }}>
-            Then drag between handles to connect shapes
+            {isTouchDevice ? 'Then drag handles to connect shapes' : 'Then drag between handles to connect shapes'}
           </p>
         </div>
       )}
