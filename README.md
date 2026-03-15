@@ -113,6 +113,12 @@ aws cloudfront create-invalidation \
 
 ---
 
+## Sponsors
+
+Grafly is sponsored by [LogDot](https://logdot.io) — simple log management and metrics monitoring for developers. Stop wrestling with complex logging platforms.
+
+---
+
 ## Contributing
 
 Contributions are welcome. For significant changes please open an issue first to discuss direction.

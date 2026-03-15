@@ -463,6 +463,23 @@ export default function Toolbar() {
                 </a>
               </section>
 
+              {/* Sponsor */}
+              <section>
+                <h3 className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Sponsored by</h3>
+                <a
+                  href="https://logdot.io"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-colors"
+                >
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shrink-0 text-white font-bold text-xs">L</div>
+                  <div>
+                    <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">LogDot</p>
+                    <p className="text-[11px] text-gray-400 dark:text-gray-500">Simple log management & metrics monitoring</p>
+                  </div>
+                </a>
+              </section>
+
             </div>
 
             {/* Footer */}
