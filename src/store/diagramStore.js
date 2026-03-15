@@ -52,6 +52,7 @@ const useDiagramStore = create((set, get) => ({
   showMinimap: true,
   showGrid: true,
   snapToGrid: false,
+  gridSize: 16,
   edgeType: 'smoothstep',
 
   // ── React Flow callbacks ──
@@ -236,6 +237,7 @@ const useDiagramStore = create((set, get) => ({
   toggleMinimap: () => set((s) => ({ showMinimap: !s.showMinimap })),
   toggleGrid: () => set((s) => ({ showGrid: !s.showGrid })),
   toggleSnapToGrid: () => set((s) => ({ snapToGrid: !s.snapToGrid })),
+  setGridSize: (gridSize) => set({ gridSize }),
 
   // ── Selection ──
   onSelectionChange: ({ nodes, edges }) => {

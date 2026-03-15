@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import diagramFormatRaw from "../../GRAFLY_DIAGRAM_FORMAT.md?raw";
 import {
@@ -23,6 +23,7 @@ import {
   Sparkles,
   Check,
   Copy as CopyIcon,
+  Info,
 } from "lucide-react";
 import useDiagramStore from "../store/diagramStore";
 import { downloadDiagram, uploadDiagram } from "../utils/fileUtils";
@@ -86,9 +87,11 @@ export default function Toolbar() {
     showMinimap,
     showGrid,
     snapToGrid,
+    gridSize,
     toggleMinimap,
     toggleGrid,
     toggleSnapToGrid,
+    setGridSize,
     edgeType,
     setEdgeType,
     nodes,
@@ -110,6 +113,12 @@ export default function Toolbar() {
   const [jsonText, setJsonText] = useState("");
   const [jsonError, setJsonError] = useState("");
   const [aiModal, setAiModal] = useState(false);
+  const [aboutModal, setAboutModal] = useState(() => !localStorage.getItem('grafly_visited'));
+
+  const closeAbout = () => {
+    localStorage.setItem('grafly_visited', '1');
+    setAboutModal(false);
+  };
   const [copied, setCopied] = useState(false);
 
   const copyDocs = () => {
@@ -304,6 +313,16 @@ export default function Toolbar() {
       >
         <Magnet size={16} />
       </ToolbarButton>
+      <select
+        value={gridSize}
+        onChange={(e) => setGridSize(Number(e.target.value))}
+        data-tooltip="Grid size"
+        className="h-7 px-1 rounded-lg text-xs text-gray-600 dark:text-gray-400 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 border-none outline-none cursor-pointer transition-colors"
+      >
+        {[8, 12, 16, 24, 32].map((s) => (
+          <option key={s} value={s}>{s}px</option>
+        ))}
+      </select>
       <button
         onClick={() => setAiModal(true)}
         data-tooltip="AI diagram format reference"
@@ -349,6 +368,117 @@ export default function Toolbar() {
           />
         </label>
       </ToolbarButton>
+      <Divider />
+      <ToolbarButton tooltip="About Grafly" onClick={() => setAboutModal(true)}>
+        <Info size={16} />
+      </ToolbarButton>
+
+      {/* About modal */}
+      {aboutModal && createPortal(
+        <div
+          className="fixed inset-0 z-[9997] flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.55)" }}
+          onMouseDown={(e) => { if (e.target === e.currentTarget) closeAbout() }}
+        >
+          <div
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden"
+            style={{ width: 520, maxHeight: "90vh" }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800 shrink-0">
+              <div className="flex items-center gap-2.5">
+                <GraflyLogo size={26} className="text-gray-800 dark:text-gray-100" />
+                <div>
+                  <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">About Grafly</h2>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">Free, open-source diagramming</p>
+                </div>
+              </div>
+              <button
+                onClick={closeAbout}
+                className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                <X size={15} />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5 text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+
+              {/* What is it */}
+              <section>
+                <h3 className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">What is Grafly?</h3>
+                <p>
+                  Grafly is a free, browser-based diagramming tool for creating flowcharts, system architecture diagrams, AWS and GCP infrastructure maps, and anything in between. No account needed — open the page and start drawing.
+                </p>
+              </section>
+
+              {/* AI */}
+              <section>
+                <h3 className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Using AI to generate diagrams</h3>
+                <ol className="space-y-1.5 list-decimal list-inside">
+                  <li>Click the <span className="inline-flex items-center gap-1 font-medium text-violet-600 dark:text-violet-400"><Sparkles size={10} />AI</span> button in the toolbar to copy the Grafly format reference.</li>
+                  <li>Paste it into any LLM (Claude, ChatGPT, Gemini…) along with a description of the diagram you want.</li>
+                  <li>Copy the JSON the LLM returns.</li>
+                  <li>Click the <span className="font-medium text-gray-700 dark:text-gray-300">Import JSON</span> button (<FileJson size={11} className="inline" />) in the toolbar and paste it in.</li>
+                </ol>
+                <p className="mt-2 text-gray-400 dark:text-gray-500">The format reference describes every node type, edge property, and shape ID so the LLM can produce valid diagrams without guessing.</p>
+              </section>
+
+              {/* Data & Privacy */}
+              <section>
+                <h3 className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Data & Privacy</h3>
+                <p>
+                  All diagrams are stored exclusively in your browser's <span className="font-medium text-gray-700 dark:text-gray-300">localStorage</span>. Nothing is sent to any server — Grafly has no backend and no tracking.
+                </p>
+                <p className="mt-1.5">
+                  Clearing your browser's site data will permanently delete your diagrams. Use <span className="font-medium text-gray-700 dark:text-gray-300">Export JSON</span> (<Download size={11} className="inline" />) regularly to back up your work.
+                </p>
+              </section>
+
+              {/* License */}
+              <section>
+                <h3 className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">License</h3>
+                <p>
+                  Grafly is open source under the <span className="font-medium text-gray-700 dark:text-gray-300">GNU Affero General Public License v3.0</span> (AGPL-3.0). You are free to use, modify, and self-host it as long as you keep any derivative works open source under the same license.
+                </p>
+                <p className="mt-1.5">
+                  For commercial use without open-sourcing your application, a commercial license is available — reach out via{" "}
+                  <a href="https://github.com/lnenad" target="_blank" rel="noopener noreferrer" className="text-primary-500 hover:text-primary-600 dark:text-primary-400 hover:underline">GitHub</a>.
+                </p>
+              </section>
+
+              {/* Author */}
+              <section>
+                <h3 className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Made by</h3>
+                <a
+                  href="https://github.com/lnenad"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-colors text-gray-700 dark:text-gray-300 font-medium"
+                >
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" className="shrink-0">
+                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.63-5.37-12-12-12z"/>
+                  </svg>
+                  Nenad (lnenad)
+                </a>
+              </section>
+
+            </div>
+
+            {/* Footer */}
+            <div className="px-5 py-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between shrink-0">
+              <span className="text-[11px] text-gray-400 dark:text-gray-600">grafly.io · AGPL-3.0</span>
+              <button
+                onClick={closeAbout}
+                className="px-4 py-1.5 text-xs font-medium rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
 
       {/* AI format reference modal */}
       {aiModal && createPortal(

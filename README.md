@@ -125,4 +125,4 @@ For internal architecture notes, known gotchas, and conventions see [`AGENTS.md`
 
 Grafly is open source under the [GNU Affero General Public License v3.0](./LICENSE) (AGPL-3.0).
 
-If you want to use Grafly in a commercial product without open-sourcing your application, a commercial license is available — contact [license@grafly.io](mailto:license@grafly.io).
+If you want to use Grafly in a commercial product without open-sourcing your application, a commercial license is available — reach out via [GitHub](https://github.com/lnenad).

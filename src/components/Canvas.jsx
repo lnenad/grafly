@@ -38,6 +38,7 @@ function CanvasInner({ onContextMenu }) {
     showMinimap,
     showGrid,
     snapToGrid,
+    gridSize,
     edgeType,
     viewport,
   } = useDiagramStore()
@@ -111,7 +112,7 @@ function CanvasInner({ onContextMenu }) {
         defaultViewport={viewport}
         onViewportChange={onViewportChange}
         snapToGrid={snapToGrid}
-        snapGrid={[16, 16]}
+        snapGrid={[gridSize, gridSize]}
         deleteKeyCode={null}
         multiSelectionKeyCode="Shift"
         selectionKeyCode={null}
@@ -141,7 +142,7 @@ function CanvasInner({ onContextMenu }) {
         onPaneContextMenu={(e) => { e.preventDefault(); onContextMenu(e.clientX, e.clientY) }}
       >
         {showGrid && (
-          <Background variant={BackgroundVariant.Dots} gap={20} size={1.5} color={isDark ? '#374151' : '#D1D5DB'} />
+          <Background variant={BackgroundVariant.Dots} gap={gridSize} size={1.5} color={isDark ? '#374151' : '#D1D5DB'} />
         )}
         <Controls showInteractive={false} style={{ bottom: 24, left: 24 }} />
         {showMinimap && (
