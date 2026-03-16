@@ -8,6 +8,8 @@
 ![Built with React](https://img.shields.io/badge/Built%20with-React-61DAFB?logo=react&logoColor=white)
 ![Powered by React Flow](https://img.shields.io/badge/Powered%20by-React%20Flow-FF0072)
 
+![Grafly screenshot](media/screenshot.png)
+
 ---
 
 ## Features
@@ -116,7 +118,7 @@ After `terraform apply`, deploy the built assets:
 
 ```bash
 npm run build
-aws s3 sync dist/ s3://grafly.io --delete
+aws s3 sync dist/ s3://yours3bucket --delete
 aws cloudfront create-invalidation \
   --distribution-id $(cd infra && terraform output -raw cloudfront_distribution_id) \
   --paths "/*"

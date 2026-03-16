@@ -15,7 +15,7 @@ const isSharedUrl = _params.has('d')
 const isEditMode  = isSharedUrl && _params.has('edit')
 
 function App() {
-  const { undo, redo, deleteSelected, copySelected, paste, theme, setIsDark, loadFromData, triggerFitView, showMinimap, toggleMinimap } = useDiagramStore()
+  const { undo, redo, deleteSelected, copySelected, paste, theme, setTheme, isDark, setIsDark, loadFromData, triggerFitView, showMinimap, toggleMinimap } = useDiagramStore()
   const [contextMenu, setContextMenu] = useState(null)
   // View mode: hide all UI chrome. True for shared URLs that aren't explicitly edit links.
   const [viewMode, setViewMode] = useState(isSharedUrl && !isEditMode)
@@ -90,6 +90,10 @@ function App() {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [onKeyDown])
 
+  const toggleTheme = useCallback(() => {
+    setTheme(isDark ? 'light' : 'dark')
+  }, [isDark, setTheme])
+
   const openEditTab = useCallback(() => {
     const state = useDiagramStore.getState()
     const encoded = encodeDiagram(state)
@@ -113,34 +117,75 @@ function App() {
             <Canvas onContextMenu={(x, y) => !viewMode && setContextMenu({ x, y })} />
 
             {viewMode && (
-              <div className="absolute bottom-6 right-6 flex flex-col items-end gap-2 z-10">
+              <div
+                className="absolute bottom-6 right-6 z-10 flex items-stretch rounded-2xl shadow-xl overflow-hidden tooltip-up"
+                style={{
+                  background: isDark ? 'rgba(17,24,39,0.9)' : 'rgba(255,255,255,0.92)',
+                  border: `1px solid ${isDark ? '#374151' : '#E5E7EB'}`,
+                  backdropFilter: 'blur(12px)',
+                }}
+              >
+                {/* Map toggle */}
                 <button
                   onClick={toggleMinimap}
-                  data-tooltip={showMinimap ? 'Hide map' : 'Show map'}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold shadow-lg transition-colors"
-                  style={{
-                    background: showMinimap ? 'rgba(123,97,255,0.12)' : 'rgba(255,255,255,0.9)',
-                    color: showMinimap ? '#7B61FF' : '#374151',
-                    border: `1.5px solid ${showMinimap ? '#7B61FF' : '#E5E7EB'}`,
-                    backdropFilter: 'blur(6px)',
-                  }}
+                  title={showMinimap ? 'Hide minimap' : 'Show minimap'}
+                  className="flex items-center justify-center w-11 h-11 transition-colors"
+                  style={{ color: showMinimap ? '#7B61FF' : isDark ? '#9CA3AF' : '#6B7280' }}
+                  onMouseEnter={e => e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
-                  <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="1" y="1" width="14" height="14" rx="2"/>
-                    <rect x="8.5" y="8.5" width="4" height="4" rx="0.5" fill="currentColor" stroke="none"/>
-                    <path d="M3 5l3 2 3-2 3 2"/>
+                  <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="1" y="1" width="14" height="14" rx="2.5"/>
+                    <rect x="8.5" y="8.5" width="4" height="4" rx="0.75" fill="currentColor" stroke="none" opacity="0.9"/>
+                    <polyline points="2.5,6 5.5,8 8.5,6 11,7.5"/>
                   </svg>
-                  Map
                 </button>
 
+                {/* Theme toggle */}
+                <button
+                  onClick={toggleTheme}
+                  title={isDark ? 'Light mode' : 'Dark mode'}
+                  className="flex items-center justify-center w-11 h-11 transition-colors"
+                  style={{ color: isDark ? '#9CA3AF' : '#6B7280' }}
+                  onMouseEnter={e => e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                >
+                  {isDark ? (
+                    /* Sun */
+                    <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+                      <circle cx="8" cy="8" r="3"/>
+                      <line x1="8" y1="1" x2="8" y2="3"/>
+                      <line x1="8" y1="13" x2="8" y2="15"/>
+                      <line x1="1" y1="8" x2="3" y2="8"/>
+                      <line x1="13" y1="8" x2="15" y2="8"/>
+                      <line x1="3.05" y1="3.05" x2="4.46" y2="4.46"/>
+                      <line x1="11.54" y1="11.54" x2="12.95" y2="12.95"/>
+                      <line x1="12.95" y1="3.05" x2="11.54" y2="4.46"/>
+                      <line x1="4.46" y1="11.54" x2="3.05" y2="12.95"/>
+                    </svg>
+                  ) : (
+                    /* Moon */
+                    <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M13.5 10A6 6 0 016 2.5a6 6 0 100 11 6 6 0 007.5-3.5z"/>
+                    </svg>
+                  )}
+                </button>
+
+                {/* Divider */}
+                <div style={{ width: 1, background: isDark ? '#374151' : '#E5E7EB', margin: '8px 0' }} />
+
+                {/* Edit diagram */}
                 <button
                   onClick={openEditTab}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold shadow-lg transition-colors"
+                  title="Edit diagram"
+                  className="flex items-center justify-center w-11 h-11 transition-colors"
+                  style={{ color: '#7B61FF' }}
+                  onMouseEnter={e => e.currentTarget.style.background = isDark ? 'rgba(123,97,255,0.15)' : 'rgba(123,97,255,0.08)'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
-                  <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M11.5 2.5l2 2L5 13H3v-2L11.5 2.5z"/>
                   </svg>
-                  Edit diagram
                 </button>
               </div>
             )}

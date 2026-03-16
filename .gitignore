@@ -1,6 +1,7 @@
 .claude
 dist/*
 node_modules/*
+analytics.html
 
 # Terraform
 infra/.terraform/
