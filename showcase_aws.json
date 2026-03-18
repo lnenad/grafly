@@ -1,0 +1,402 @@
+{
+  "id": "diagram_1742000000000_aws01",
+  "name": "AWS Production Platform",
+  "viewport": { "x": 40, "y": 20, "zoom": 0.75 },
+  "nodes": [
+    {
+      "id": "n_title",
+      "type": "shape",
+      "position": { "x": 8, "y": 6 },
+      "width": 440,
+      "height": 28,
+      "zIndex": 3,
+      "data": {
+        "shapeType": "textbox",
+        "label": "AWS Production Platform",
+        "fillColor": "transparent",
+        "strokeColor": "transparent",
+        "strokeWidth": 0,
+        "strokeStyle": "solid",
+        "textColor": "#111827",
+        "fontSize": 20,
+        "fontWeight": "700",
+        "fontStyle": "normal",
+        "textDecoration": "none",
+        "textAlign": "left",
+        "opacity": 1
+      }
+    },
+
+    { "id": "n_zone_internet", "type": "shape", "position": { "x": 0, "y": 40 }, "width": 960, "height": 140, "zIndex": 0,
+      "data": { "shapeType": "rect", "label": "", "fillColor": "#EFF6FF", "strokeColor": "#BFDBFE", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#1E3A8A", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "left", "opacity": 0.55 } },
+
+    { "id": "n_zone_public", "type": "shape", "position": { "x": 0, "y": 200 }, "width": 960, "height": 150, "zIndex": 0,
+      "data": { "shapeType": "rect", "label": "", "fillColor": "#F5F3FF", "strokeColor": "#DDD6FE", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#4C1D95", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "left", "opacity": 0.55 } },
+
+    { "id": "n_zone_compute", "type": "shape", "position": { "x": 0, "y": 370 }, "width": 750, "height": 160, "zIndex": 0,
+      "data": { "shapeType": "rect", "label": "", "fillColor": "#FFF7ED", "strokeColor": "#FED7AA", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#7C2D12", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "left", "opacity": 0.55 } },
+
+    { "id": "n_zone_async", "type": "shape", "position": { "x": 0, "y": 550 }, "width": 590, "height": 160, "zIndex": 0,
+      "data": { "shapeType": "rect", "label": "", "fillColor": "#FEFCE8", "strokeColor": "#FDE68A", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#713F12", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "left", "opacity": 0.55 } },
+
+    { "id": "n_zone_data", "type": "shape", "position": { "x": 0, "y": 730 }, "width": 960, "height": 160, "zIndex": 0,
+      "data": { "shapeType": "rect", "label": "", "fillColor": "#F0FDF4", "strokeColor": "#BBF7D0", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#14532D", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "left", "opacity": 0.55 } },
+
+    { "id": "n_zone_ops", "type": "shape", "position": { "x": 790, "y": 370 }, "width": 170, "height": 340, "zIndex": 0,
+      "data": { "shapeType": "rect", "label": "", "fillColor": "#FDF2F8", "strokeColor": "#FBCFE8", "strokeWidth": 1, "strokeStyle": "dashed", "textColor": "#831843", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "left", "opacity": 0.55 } },
+
+    { "id": "n_lbl_internet", "type": "shape", "position": { "x": 8, "y": 43 }, "width": 200, "height": 20, "zIndex": 1,
+      "data": { "shapeType": "textbox", "label": "INTERNET EDGE", "fillColor": "transparent", "strokeColor": "transparent", "strokeWidth": 0, "strokeStyle": "solid", "textColor": "#93C5FD", "fontSize": 10, "fontWeight": "700", "fontStyle": "normal", "textDecoration": "none", "textAlign": "left", "opacity": 1 } },
+
+    { "id": "n_lbl_public", "type": "shape", "position": { "x": 8, "y": 203 }, "width": 260, "height": 20, "zIndex": 1,
+      "data": { "shapeType": "textbox", "label": "VPC — PUBLIC SUBNETS", "fillColor": "transparent", "strokeColor": "transparent", "strokeWidth": 0, "strokeStyle": "solid", "textColor": "#C4B5FD", "fontSize": 10, "fontWeight": "700", "fontStyle": "normal", "textDecoration": "none", "textAlign": "left", "opacity": 1 } },
+
+    { "id": "n_lbl_compute", "type": "shape", "position": { "x": 8, "y": 373 }, "width": 300, "height": 20, "zIndex": 1,
+      "data": { "shapeType": "textbox", "label": "PRIVATE SUBNET — COMPUTE", "fillColor": "transparent", "strokeColor": "transparent", "strokeWidth": 0, "strokeStyle": "solid", "textColor": "#FCA5A5", "fontSize": 10, "fontWeight": "700", "fontStyle": "normal", "textDecoration": "none", "textAlign": "left", "opacity": 1 } },
+
+    { "id": "n_lbl_async", "type": "shape", "position": { "x": 8, "y": 553 }, "width": 220, "height": 20, "zIndex": 1,
+      "data": { "shapeType": "textbox", "label": "ASYNC / EVENT BUS", "fillColor": "transparent", "strokeColor": "transparent", "strokeWidth": 0, "strokeStyle": "solid", "textColor": "#FCD34D", "fontSize": 10, "fontWeight": "700", "fontStyle": "normal", "textDecoration": "none", "textAlign": "left", "opacity": 1 } },
+
+    { "id": "n_lbl_data", "type": "shape", "position": { "x": 8, "y": 733 }, "width": 260, "height": 20, "zIndex": 1,
+      "data": { "shapeType": "textbox", "label": "PRIVATE SUBNET — DATA", "fillColor": "transparent", "strokeColor": "transparent", "strokeWidth": 0, "strokeStyle": "solid", "textColor": "#6EE7B7", "fontSize": 10, "fontWeight": "700", "fontStyle": "normal", "textDecoration": "none", "textAlign": "left", "opacity": 1 } },
+
+    { "id": "n_lbl_ops", "type": "shape", "position": { "x": 795, "y": 373 }, "width": 160, "height": 20, "zIndex": 1,
+      "data": { "shapeType": "textbox", "label": "OBSERVABILITY", "fillColor": "transparent", "strokeColor": "transparent", "strokeWidth": 0, "strokeStyle": "solid", "textColor": "#F9A8D4", "fontSize": 10, "fontWeight": "700", "fontStyle": "normal", "textDecoration": "none", "textAlign": "left", "opacity": 1 } },
+
+    {
+      "id": "n_users",
+      "type": "shape",
+      "position": { "x": 20, "y": 84 },
+      "width": 120,
+      "height": 50,
+      "zIndex": 2,
+      "data": {
+        "shapeType": "pill",
+        "label": "Users",
+        "fillColor": "#DBEAFE",
+        "strokeColor": "#3B82F6",
+        "strokeWidth": 2,
+        "strokeStyle": "solid",
+        "textColor": "#1E3A8A",
+        "fontSize": 13,
+        "fontWeight": "700",
+        "fontStyle": "normal",
+        "textDecoration": "none",
+        "textAlign": "center",
+        "opacity": 1
+      }
+    },
+
+    { "id": "n_r53", "type": "shape", "position": { "x": 200, "y": 60 }, "width": 90, "height": 90, "zIndex": 2,
+      "data": { "shapeType": "aws-route53", "label": "Route 53", "fillColor": "#FFFFFF", "strokeColor": "#E5E7EB", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#111827", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "center", "opacity": 1, "isCloudShape": true, "accentColor": "#8C4FFF" } },
+
+    { "id": "n_cf", "type": "shape", "position": { "x": 390, "y": 60 }, "width": 90, "height": 90, "zIndex": 2,
+      "data": { "shapeType": "aws-cloudfront", "label": "CloudFront", "fillColor": "#FFFFFF", "strokeColor": "#E5E7EB", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#111827", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "center", "opacity": 1, "isCloudShape": true, "accentColor": "#8C4FFF" } },
+
+    { "id": "n_s3_assets", "type": "shape", "position": { "x": 570, "y": 60 }, "width": 90, "height": 90, "zIndex": 2,
+      "data": { "shapeType": "aws-s3", "label": "Static Assets", "fillColor": "#FFFFFF", "strokeColor": "#E5E7EB", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#111827", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "center", "opacity": 1, "isCloudShape": true, "accentColor": "#3F8624" } },
+
+    { "id": "n_apigw", "type": "shape", "position": { "x": 200, "y": 225 }, "width": 90, "height": 90, "zIndex": 2,
+      "data": { "shapeType": "aws-apigateway", "label": "API Gateway", "fillColor": "#FFFFFF", "strokeColor": "#E5E7EB", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#111827", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "center", "opacity": 1, "isCloudShape": true, "accentColor": "#8C4FFF" } },
+
+    { "id": "n_alb", "type": "shape", "position": { "x": 390, "y": 225 }, "width": 90, "height": 90, "zIndex": 2,
+      "data": { "shapeType": "aws-elb", "label": "ALB", "fillColor": "#FFFFFF", "strokeColor": "#E5E7EB", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#111827", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "center", "opacity": 1, "isCloudShape": true, "accentColor": "#8C4FFF" } },
+
+    {
+      "id": "n_vpce",
+      "type": "shape",
+      "position": { "x": 570, "y": 238 },
+      "width": 130,
+      "height": 56,
+      "zIndex": 2,
+      "data": {
+        "shapeType": "roundedRect",
+        "label": "VPC Endpoint",
+        "fillColor": "#F5F3FF",
+        "strokeColor": "#8B5CF6",
+        "strokeWidth": 1,
+        "strokeStyle": "dashed",
+        "textColor": "#4C1D95",
+        "fontSize": 11,
+        "fontWeight": "600",
+        "fontStyle": "normal",
+        "textDecoration": "none",
+        "textAlign": "center",
+        "opacity": 1
+      }
+    },
+
+    { "id": "n_lambda", "type": "shape", "position": { "x": 60, "y": 395 }, "width": 90, "height": 90, "zIndex": 2,
+      "data": { "shapeType": "aws-lambda", "label": "Lambda", "fillColor": "#FFFFFF", "strokeColor": "#E5E7EB", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#111827", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "center", "opacity": 1, "isCloudShape": true, "accentColor": "#FF9900" } },
+
+    { "id": "n_ecs_a", "type": "shape", "position": { "x": 225, "y": 395 }, "width": 90, "height": 90, "zIndex": 2,
+      "data": { "shapeType": "aws-ecs", "label": "ECS — API", "fillColor": "#FFFFFF", "strokeColor": "#E5E7EB", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#111827", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "center", "opacity": 1, "isCloudShape": true, "accentColor": "#FF9900" } },
+
+    { "id": "n_ecs_b", "type": "shape", "position": { "x": 395, "y": 395 }, "width": 90, "height": 90, "zIndex": 2,
+      "data": { "shapeType": "aws-ecs", "label": "ECS — Worker", "fillColor": "#FFFFFF", "strokeColor": "#E5E7EB", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#111827", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "center", "opacity": 1, "isCloudShape": true, "accentColor": "#FF9900" } },
+
+    { "id": "n_eks", "type": "shape", "position": { "x": 565, "y": 395 }, "width": 90, "height": 90, "zIndex": 2,
+      "data": { "shapeType": "aws-eks", "label": "EKS Cluster", "fillColor": "#FFFFFF", "strokeColor": "#E5E7EB", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#111827", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "center", "opacity": 1, "isCloudShape": true, "accentColor": "#FF9900" } },
+
+    { "id": "n_cloudwatch", "type": "shape", "position": { "x": 815, "y": 395 }, "width": 90, "height": 90, "zIndex": 2,
+      "data": { "shapeType": "aws-cloudwatch", "label": "CloudWatch", "fillColor": "#FFFFFF", "strokeColor": "#E5E7EB", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#111827", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "center", "opacity": 1, "isCloudShape": true, "accentColor": "#E7157B" } },
+
+    { "id": "n_sns", "type": "shape", "position": { "x": 60, "y": 580 }, "width": 90, "height": 90, "zIndex": 2,
+      "data": { "shapeType": "aws-sns", "label": "SNS", "fillColor": "#FFFFFF", "strokeColor": "#E5E7EB", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#111827", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "center", "opacity": 1, "isCloudShape": true, "accentColor": "#E7157B" } },
+
+    { "id": "n_sqs", "type": "shape", "position": { "x": 240, "y": 580 }, "width": 90, "height": 90, "zIndex": 2,
+      "data": { "shapeType": "aws-sqs", "label": "Events Queue", "fillColor": "#FFFFFF", "strokeColor": "#E5E7EB", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#111827", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "center", "opacity": 1, "isCloudShape": true, "accentColor": "#E7157B" } },
+
+    { "id": "n_sqs_dlq", "type": "shape", "position": { "x": 420, "y": 580 }, "width": 90, "height": 90, "zIndex": 2,
+      "data": { "shapeType": "aws-sqs", "label": "Dead Letter Queue", "fillColor": "#FFF1F2", "strokeColor": "#FCA5A5", "strokeWidth": 1, "strokeStyle": "dashed", "textColor": "#881337", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "center", "opacity": 1, "isCloudShape": true, "accentColor": "#E7157B" } },
+
+    { "id": "n_iam", "type": "shape", "position": { "x": 815, "y": 580 }, "width": 90, "height": 90, "zIndex": 2,
+      "data": { "shapeType": "aws-iam", "label": "IAM", "fillColor": "#FFFFFF", "strokeColor": "#E5E7EB", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#111827", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "center", "opacity": 1, "isCloudShape": true, "accentColor": "#DD344C" } },
+
+    { "id": "n_aurora", "type": "shape", "position": { "x": 30, "y": 755 }, "width": 90, "height": 90, "zIndex": 2,
+      "data": { "shapeType": "aws-aurora", "label": "Aurora Primary", "fillColor": "#FFFFFF", "strokeColor": "#E5E7EB", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#111827", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "center", "opacity": 1, "isCloudShape": true, "accentColor": "#3B48CC" } },
+
+    { "id": "n_rds", "type": "shape", "position": { "x": 195, "y": 755 }, "width": 90, "height": 90, "zIndex": 2,
+      "data": { "shapeType": "aws-rds", "label": "Read Replica", "fillColor": "#FFFFFF", "strokeColor": "#E5E7EB", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#111827", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "center", "opacity": 1, "isCloudShape": true, "accentColor": "#3B48CC" } },
+
+    { "id": "n_elasticache", "type": "shape", "position": { "x": 365, "y": 755 }, "width": 90, "height": 90, "zIndex": 2,
+      "data": { "shapeType": "aws-elasticache", "label": "ElastiCache", "fillColor": "#FFFFFF", "strokeColor": "#E5E7EB", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#111827", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "center", "opacity": 1, "isCloudShape": true, "accentColor": "#3B48CC" } },
+
+    { "id": "n_dynamo", "type": "shape", "position": { "x": 535, "y": 755 }, "width": 90, "height": 90, "zIndex": 2,
+      "data": { "shapeType": "aws-dynamodb", "label": "DynamoDB", "fillColor": "#FFFFFF", "strokeColor": "#E5E7EB", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#111827", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "center", "opacity": 1, "isCloudShape": true, "accentColor": "#3B48CC" } },
+
+    { "id": "n_s3_data", "type": "shape", "position": { "x": 700, "y": 755 }, "width": 90, "height": 90, "zIndex": 2,
+      "data": { "shapeType": "aws-s3", "label": "Data Lake", "fillColor": "#FFFFFF", "strokeColor": "#E5E7EB", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#111827", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "center", "opacity": 1, "isCloudShape": true, "accentColor": "#3F8624" } },
+
+    { "id": "n_efs", "type": "shape", "position": { "x": 860, "y": 755 }, "width": 90, "height": 90, "zIndex": 2,
+      "data": { "shapeType": "aws-efs", "label": "EFS", "fillColor": "#FFFFFF", "strokeColor": "#E5E7EB", "strokeWidth": 1, "strokeStyle": "solid", "textColor": "#111827", "fontSize": 11, "fontWeight": "600", "fontStyle": "normal", "textDecoration": "none", "textAlign": "center", "opacity": 1, "isCloudShape": true, "accentColor": "#3F8624" } }
+  ],
+
+  "edges": [
+    {
+      "id": "e_users_r53",
+      "type": "custom",
+      "source": "n_users",
+      "target": "n_r53",
+      "sourceHandle": "right",
+      "targetHandle": "left",
+      "data": { "label": "", "edgeStyle": "solid", "edgeColor": "#6B7280", "edgeWidth": 2, "animated": false, "pathType": "smoothstep", "arrowType": "filled", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_r53_cf",
+      "type": "custom",
+      "source": "n_r53",
+      "target": "n_cf",
+      "sourceHandle": "right",
+      "targetHandle": "left",
+      "data": { "label": "DNS", "edgeStyle": "solid", "edgeColor": "#8C4FFF", "edgeWidth": 2, "animated": false, "pathType": "smoothstep", "arrowType": "filled", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_cf_s3assets",
+      "type": "custom",
+      "source": "n_cf",
+      "target": "n_s3_assets",
+      "sourceHandle": "right",
+      "targetHandle": "left",
+      "data": { "label": "static assets", "edgeStyle": "dashed", "edgeColor": "#3F8624", "edgeWidth": 1, "animated": false, "pathType": "smoothstep", "arrowType": "open", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_cf_alb",
+      "type": "custom",
+      "source": "n_cf",
+      "target": "n_alb",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "data": { "label": "web traffic", "edgeStyle": "solid", "edgeColor": "#8C4FFF", "edgeWidth": 2, "animated": true, "pathType": "smoothstep", "arrowType": "filled", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_cf_apigw",
+      "type": "custom",
+      "source": "n_cf",
+      "target": "n_apigw",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "data": { "label": "REST API", "edgeStyle": "solid", "edgeColor": "#A78BFA", "edgeWidth": 2, "animated": true, "pathType": "bezier", "arrowType": "filled", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_apigw_lambda",
+      "type": "custom",
+      "source": "n_apigw",
+      "target": "n_lambda",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "data": { "label": "invoke", "edgeStyle": "solid", "edgeColor": "#FF9900", "edgeWidth": 2, "animated": true, "pathType": "smoothstep", "arrowType": "filled", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_alb_ecs_a",
+      "type": "custom",
+      "source": "n_alb",
+      "target": "n_ecs_a",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "data": { "label": "", "edgeStyle": "solid", "edgeColor": "#FF9900", "edgeWidth": 2, "animated": false, "pathType": "smoothstep", "arrowType": "filled", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_alb_ecs_b",
+      "type": "custom",
+      "source": "n_alb",
+      "target": "n_ecs_b",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "data": { "label": "", "edgeStyle": "solid", "edgeColor": "#FF9900", "edgeWidth": 2, "animated": false, "pathType": "smoothstep", "arrowType": "filled", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_alb_eks",
+      "type": "custom",
+      "source": "n_alb",
+      "target": "n_eks",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "data": { "label": "", "edgeStyle": "solid", "edgeColor": "#FF9900", "edgeWidth": 2, "animated": false, "pathType": "smoothstep", "arrowType": "filled", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_lambda_sns",
+      "type": "custom",
+      "source": "n_lambda",
+      "target": "n_sns",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "data": { "label": "emit event", "edgeStyle": "solid", "edgeColor": "#E7157B", "edgeWidth": 1, "animated": false, "pathType": "smoothstep", "arrowType": "filled", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_ecs_a_sns",
+      "type": "custom",
+      "source": "n_ecs_a",
+      "target": "n_sns",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "data": { "label": "", "edgeStyle": "solid", "edgeColor": "#E7157B", "edgeWidth": 1, "animated": false, "pathType": "bezier", "arrowType": "filled", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_sns_sqs",
+      "type": "custom",
+      "source": "n_sns",
+      "target": "n_sqs",
+      "sourceHandle": "right",
+      "targetHandle": "left",
+      "data": { "label": "fan-out", "edgeStyle": "solid", "edgeColor": "#E7157B", "edgeWidth": 2, "animated": true, "pathType": "smoothstep", "arrowType": "filled", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_sqs_lambda",
+      "type": "custom",
+      "source": "n_sqs",
+      "target": "n_lambda",
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "data": { "label": "trigger", "edgeStyle": "solid", "edgeColor": "#F59E0B", "edgeWidth": 2, "animated": true, "pathType": "bezier", "arrowType": "filled", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_sqs_dlq",
+      "type": "custom",
+      "source": "n_sqs",
+      "target": "n_sqs_dlq",
+      "sourceHandle": "right",
+      "targetHandle": "left",
+      "data": { "label": "failed", "edgeStyle": "dashed", "edgeColor": "#F87171", "edgeWidth": 2, "animated": false, "pathType": "smoothstep", "arrowType": "filled", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_ecs_b_vpce",
+      "type": "custom",
+      "source": "n_ecs_b",
+      "target": "n_vpce",
+      "sourceHandle": "right",
+      "targetHandle": "left",
+      "data": { "label": "", "edgeStyle": "dotted", "edgeColor": "#A78BFA", "edgeWidth": 1, "animated": false, "pathType": "smoothstep", "arrowType": "open", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_vpce_s3assets",
+      "type": "custom",
+      "source": "n_vpce",
+      "target": "n_s3_assets",
+      "sourceHandle": "top",
+      "targetHandle": "bottom",
+      "data": { "label": "private", "edgeStyle": "dotted", "edgeColor": "#A78BFA", "edgeWidth": 1, "animated": false, "pathType": "bezier", "arrowType": "open", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_lambda_aurora",
+      "type": "custom",
+      "source": "n_lambda",
+      "target": "n_aurora",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "data": { "label": "", "edgeStyle": "solid", "edgeColor": "#3B48CC", "edgeWidth": 2, "animated": false, "pathType": "smoothstep", "arrowType": "filled", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_ecs_a_aurora",
+      "type": "custom",
+      "source": "n_ecs_a",
+      "target": "n_aurora",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "data": { "label": "", "edgeStyle": "solid", "edgeColor": "#3B48CC", "edgeWidth": 2, "animated": false, "pathType": "bezier", "arrowType": "filled", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_aurora_rds",
+      "type": "custom",
+      "source": "n_aurora",
+      "target": "n_rds",
+      "sourceHandle": "right",
+      "targetHandle": "left",
+      "data": { "label": "replication", "edgeStyle": "dashed", "edgeColor": "#60A5FA", "edgeWidth": 1, "animated": false, "pathType": "smoothstep", "arrowType": "open", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_ecs_a_elasticache",
+      "type": "custom",
+      "source": "n_ecs_a",
+      "target": "n_elasticache",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "data": { "label": "cache", "edgeStyle": "solid", "edgeColor": "#3B48CC", "edgeWidth": 1, "animated": false, "pathType": "smoothstep", "arrowType": "filled", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_ecs_b_dynamo",
+      "type": "custom",
+      "source": "n_ecs_b",
+      "target": "n_dynamo",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "data": { "label": "", "edgeStyle": "solid", "edgeColor": "#3B48CC", "edgeWidth": 2, "animated": false, "pathType": "smoothstep", "arrowType": "filled", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_eks_efs",
+      "type": "custom",
+      "source": "n_eks",
+      "target": "n_efs",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "data": { "label": "persistent vol", "edgeStyle": "solid", "edgeColor": "#3F8624", "edgeWidth": 1, "animated": false, "pathType": "smoothstep", "arrowType": "filled", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_lambda_s3data",
+      "type": "custom",
+      "source": "n_lambda",
+      "target": "n_s3_data",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "data": { "label": "write events", "edgeStyle": "dashed", "edgeColor": "#3F8624", "edgeWidth": 1, "animated": false, "pathType": "bezier", "arrowType": "filled", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_ecs_a_cloudwatch",
+      "type": "custom",
+      "source": "n_ecs_a",
+      "target": "n_cloudwatch",
+      "sourceHandle": "right",
+      "targetHandle": "left",
+      "data": { "label": "metrics", "edgeStyle": "dotted", "edgeColor": "#D1D5DB", "edgeWidth": 1, "animated": false, "pathType": "smoothstep", "arrowType": "open", "arrowStart": false, "waypoint": null }
+    },
+    {
+      "id": "e_lambda_cloudwatch",
+      "type": "custom",
+      "source": "n_lambda",
+      "target": "n_cloudwatch",
+      "sourceHandle": "right",
+      "targetHandle": "left",
+      "data": { "label": "logs", "edgeStyle": "dotted", "edgeColor": "#D1D5DB", "edgeWidth": 1, "animated": false, "pathType": "bezier", "arrowType": "open", "arrowStart": false, "waypoint": null }
+    }
+  ]
+}

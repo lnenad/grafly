@@ -26,10 +26,12 @@ import {
   Info,
   Share2,
   Link,
+  FileCode2,
 } from "lucide-react";
 import useDiagramStore from "../store/diagramStore";
 import { downloadDiagram, uploadDiagram } from "../utils/fileUtils";
 import { encodeDiagram } from "../utils/urlCodec";
+import { exportMermaid, importMermaid, exportDot, importDot } from "../utils/converters/index.js";
 import GraflyLogo from "./GraflyLogo";
 
 const EDGE_TYPES = [
@@ -120,6 +122,12 @@ export default function Toolbar() {
   const [shareModal, setShareModal] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
   const [shareCopied, setShareCopied] = useState(false);
+  const [convertModal, setConvertModal] = useState(false);
+  const [convertTab, setConvertTab] = useState('export');
+  const [convertFormat, setConvertFormat] = useState('mermaid');
+  const [convertText, setConvertText] = useState('');
+  const [convertError, setConvertError] = useState('');
+  const [convertCopied, setConvertCopied] = useState(false);
 
   const closeAbout = () => {
     localStorage.setItem('grafly_visited', '1');
@@ -160,6 +168,50 @@ export default function Toolbar() {
     setJsonText("");
     setJsonError("");
     setJsonModal(true);
+  };
+
+  const getConvertText = (tab, fmt) => {
+    if (tab !== 'export') return '';
+    const { nodes, edges } = useDiagramStore.getState();
+    return fmt === 'mermaid' ? exportMermaid({ nodes, edges }) : exportDot({ nodes, edges });
+  };
+
+  const openConvertModal = () => {
+    setConvertTab('export');
+    setConvertFormat('mermaid');
+    setConvertError('');
+    setConvertCopied(false);
+    setConvertText(getConvertText('export', 'mermaid'));
+    setConvertModal(true);
+  };
+
+  const handleConvertTabChange = (tab) => {
+    setConvertTab(tab);
+    setConvertError('');
+    setConvertText(getConvertText(tab, convertFormat));
+  };
+
+  const handleConvertFormatChange = (fmt) => {
+    setConvertFormat(fmt);
+    setConvertError('');
+    setConvertText(getConvertText(convertTab, fmt));
+  };
+
+  const doConvertImport = () => {
+    try {
+      const data = convertFormat === 'mermaid' ? importMermaid(convertText.trim()) : importDot(convertText.trim());
+      loadFromData(data);
+      setConvertModal(false);
+    } catch (e) {
+      setConvertError(e.message);
+    }
+  };
+
+  const copyConvertText = () => {
+    navigator.clipboard.writeText(convertText).then(() => {
+      setConvertCopied(true);
+      setTimeout(() => setConvertCopied(false), 2000);
+    });
   };
 
   const importJson = () => {
@@ -396,6 +448,9 @@ export default function Toolbar() {
           />
         </label>
       </ToolbarButton>
+      <ToolbarButton tooltip="Convert to/from Mermaid or DOT" onClick={openConvertModal}>
+        <FileCode2 size={16} />
+      </ToolbarButton>
       <Divider />
       <ToolbarButton tooltip="Share / embed diagram" onClick={openShareModal}>
         <Share2 size={16} />
@@ -522,6 +577,17 @@ export default function Toolbar() {
                 <p className="mt-2 text-gray-400 dark:text-gray-500">The format reference describes every node type, edge property, and shape ID so the LLM can produce valid diagrams without guessing.</p>
               </section>
 
+              {/* Text conversion */}
+              <section>
+                <h3 className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Import & export text formats</h3>
+                <p>
+                  Click the <span className="inline-flex items-center gap-1 font-medium text-gray-700 dark:text-gray-300"><FileCode2 size={11} className="inline" />Convert</span> button to export your diagram as <span className="font-medium text-gray-700 dark:text-gray-300">Mermaid</span> or <span className="font-medium text-gray-700 dark:text-gray-300">DOT / Graphviz</span> — or paste either format to import it as a new diagram.
+                </p>
+                <p className="mt-1.5 text-gray-400 dark:text-gray-500">
+                  Mermaid is natively supported in GitHub, GitLab, Notion, and VS Code. DOT is the standard format for Graphviz and many CI pipeline tools.
+                </p>
+              </section>
+
               {/* Data & Privacy */}
               <section>
                 <h3 className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Data & Privacy</h3>
@@ -645,6 +711,129 @@ export default function Toolbar() {
             >
               {diagramFormatRaw}
             </pre>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Convert modal */}
+      {convertModal && createPortal(
+        <div
+          className="fixed inset-0 z-[9993] flex items-center justify-center p-4"
+          style={{ background: 'rgba(0,0,0,0.55)' }}
+          onMouseDown={(e) => { if (e.target === e.currentTarget) setConvertModal(false) }}
+        >
+          <div
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden"
+            style={{ width: 680, maxHeight: '88vh' }}
+            onKeyDown={(e) => { if (e.key === 'Escape') setConvertModal(false) }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800 shrink-0">
+              <div className="flex items-center gap-2">
+                <FileCode2 size={15} className="text-primary-500" />
+                <div>
+                  <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Convert Diagram</h2>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Export to or import from Mermaid / DOT format</p>
+                </div>
+              </div>
+              <button onClick={() => setConvertModal(false)} className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <X size={15} />
+              </button>
+            </div>
+
+            {/* Tab + Format row */}
+            <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 dark:border-gray-800 shrink-0">
+              <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5 gap-0.5">
+                {['export', 'import'].map(tab => (
+                  <button key={tab} onClick={() => handleConvertTabChange(tab)}
+                    className={`px-3 py-1 rounded-md text-xs font-medium transition-all capitalize ${
+                      convertTab === tab
+                        ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm'
+                        : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
+                    }`}>
+                    {tab}
+                  </button>
+                ))}
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-400 dark:text-gray-500">Format:</span>
+                <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5 gap-0.5">
+                  {[{ value: 'mermaid', label: 'Mermaid' }, { value: 'dot', label: 'DOT' }].map(f => (
+                    <button key={f.value} onClick={() => handleConvertFormatChange(f.value)}
+                      className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                        convertFormat === f.value
+                          ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm'
+                          : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
+                      }`}>
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Textarea */}
+            <div className="flex-1 overflow-hidden px-5 py-4 flex flex-col gap-2">
+              <div className="relative flex-1">
+                <textarea
+                  readOnly={convertTab === 'export'}
+                  autoFocus={convertTab === 'import'}
+                  value={convertText}
+                  onChange={convertTab === 'import' ? (e) => { setConvertText(e.target.value); setConvertError('') } : undefined}
+                  spellCheck={false}
+                  placeholder={convertTab === 'import'
+                    ? (convertFormat === 'mermaid' ? 'flowchart TD\n    A["Start"] --> B["End"]' : 'digraph G {\n    "A" -> "B"\n}')
+                    : ''}
+                  className={`w-full h-64 resize-none text-xs font-mono bg-gray-50 dark:bg-gray-800 border rounded-xl px-3 py-3 outline-none transition-colors text-gray-800 dark:text-gray-200 placeholder-gray-300 dark:placeholder-gray-600 ${
+                    convertError
+                      ? 'border-red-400 dark:border-red-600'
+                      : 'border-gray-200 dark:border-gray-700 focus:border-primary-400 dark:focus:border-primary-500'
+                  } ${convertTab === 'export' ? 'cursor-default' : ''}`}
+                />
+                {convertTab === 'export' && (
+                  <button
+                    onClick={copyConvertText}
+                    className={`absolute top-2 right-2 flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-xs font-medium transition-all ${
+                      convertCopied
+                        ? 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400'
+                        : 'bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600 shadow-sm'
+                    }`}
+                  >
+                    {convertCopied ? <Check size={12} /> : <CopyIcon size={12} />}
+                    {convertCopied ? 'Copied!' : 'Copy'}
+                  </button>
+                )}
+              </div>
+              {convertTab === 'import' && convertText.trim() && !convertError && (
+                <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg px-3 py-2">
+                  This will replace the current diagram. Export your work first if needed.
+                </p>
+              )}
+              {convertError && (
+                <p className="text-xs text-red-500 dark:text-red-400 flex items-start gap-1.5">
+                  <span className="font-semibold shrink-0">Error:</span>
+                  <span>{convertError}</span>
+                </p>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-gray-100 dark:border-gray-800 shrink-0">
+              <button onClick={() => setConvertModal(false)}
+                className="px-4 py-1.5 text-xs font-medium rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                {convertTab === 'export' ? 'Close' : 'Cancel'}
+              </button>
+              {convertTab === 'import' && (
+                <button
+                  onClick={doConvertImport}
+                  disabled={!convertText.trim()}
+                  className="px-4 py-1.5 text-xs font-semibold rounded-lg bg-primary-500 text-white hover:bg-primary-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  Import Diagram
+                </button>
+              )}
+            </div>
           </div>
         </div>,
         document.body
