@@ -229,6 +229,7 @@ export default function ShapeLibrary() {
   // ── Expanded panel ───────────────────────────────────────────────────────
   return (
     <div
+      id="shape-library"
       className="flex flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 h-full"
       style={{ width: 180, minWidth: 180, boxShadow: '1px 0 0 rgba(0,0,0,0.04)' }}
     >

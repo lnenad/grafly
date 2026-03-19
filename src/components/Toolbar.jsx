@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import diagramFormatRaw from "../../GRAFLY_DIAGRAM_FORMAT.md?raw";
 import {
@@ -77,6 +77,95 @@ function Divider() {
   );
 }
 
+// ─── Tour ─────────────────────────────────────────────────────────────────────
+
+const TOUR_STEPS = [
+  {
+    selector: '#shape-library',
+    placement: 'right',
+    highlight: true,
+    title: 'Drag shapes to canvas',
+    body: 'Browse Basic, AWS, and GCP shapes using the tabs above. Drag any shape onto the canvas to place it.',
+  },
+  {
+    selector: '.react-flow',
+    placement: 'center',
+    highlight: false,
+    title: 'Connect nodes',
+    body: 'Hover any shape to reveal its handles, then drag from one handle to another shape to draw a connection. Double-click the canvas to add a text node.',
+  },
+  {
+    selector: '#properties-panel',
+    placement: 'left',
+    highlight: false,
+    title: 'Edit properties',
+    body: 'Click any shape or edge to select it — then adjust its label, fill color, border, font, and opacity in this panel.',
+  },
+  {
+    selector: '[data-tooltip="AI diagram format reference"]',
+    placement: 'bottom',
+    highlight: true,
+    title: 'Generate with AI',
+    body: 'Copy the format reference and paste it into any LLM with a description to generate a full diagram instantly.',
+  },
+  {
+    selector: '[data-tooltip="Convert to/from Mermaid or DOT"]',
+    placement: 'bottom',
+    highlight: true,
+    title: 'Import & export text',
+    body: 'Export your diagram as Mermaid or DOT, or paste either format to import a diagram from GitHub, Notion, or Graphviz.',
+  },
+  {
+    selector: '[data-tooltip="Share / embed diagram"]',
+    placement: 'bottom',
+    highlight: true,
+    title: 'Share your diagram',
+    body: 'Your entire diagram is encoded in the URL — share it with anyone, no account or server needed.',
+  },
+]
+
+const BUBBLE_W = 264
+
+function getBubblePos(rect, placement) {
+  if (!rect) return { top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }
+  const gap = 14
+  const vw = window.innerWidth
+  const vh = window.innerHeight
+  if (placement === 'bottom') {
+    const left = Math.min(Math.max(rect.left + rect.width / 2 - BUBBLE_W / 2, 10), vw - BUBBLE_W - 10)
+    return { top: Math.min(rect.bottom + gap, vh - 220), left }
+  }
+  if (placement === 'right') {
+    return { left: rect.right + gap, top: Math.min(Math.max(rect.top + rect.height / 2 - 100, 10), vh - 220) }
+  }
+  if (placement === 'left') {
+    return { right: vw - rect.left + gap, top: Math.min(Math.max(rect.top + rect.height / 2 - 100, 10), vh - 220) }
+  }
+  // center
+  return {
+    top: Math.max(rect.top + rect.height / 2 - 100, 80),
+    left: Math.min(Math.max(rect.left + rect.width / 2 - BUBBLE_W / 2, 10), vw - BUBBLE_W - 10),
+  }
+}
+
+function TourArrow({ placement }) {
+  // Rotated square: bg matches the bubble card, visible border edges form the arrow tip.
+  const shared = 'absolute w-3 h-3 bg-white dark:bg-gray-900'
+  if (placement === 'bottom') return (
+    <div className={`${shared} border-l border-t border-gray-200 dark:border-gray-700`}
+      style={{ top: -6, left: '50%', transform: 'translateX(-50%) rotate(45deg)' }} />
+  )
+  if (placement === 'right') return (
+    <div className={`${shared} border-l border-b border-gray-200 dark:border-gray-700`}
+      style={{ left: -6, top: '50%', transform: 'translateY(-50%) rotate(45deg)' }} />
+  )
+  if (placement === 'left') return (
+    <div className={`${shared} border-r border-t border-gray-200 dark:border-gray-700`}
+      style={{ right: -6, top: '50%', transform: 'translateY(-50%) rotate(45deg)' }} />
+  )
+  return null
+}
+
 export default function Toolbar() {
   const {
     name,
@@ -128,10 +217,14 @@ export default function Toolbar() {
   const [convertText, setConvertText] = useState('');
   const [convertError, setConvertError] = useState('');
   const [convertCopied, setConvertCopied] = useState(false);
+  const [tourStep, setTourStep] = useState(null);
+  const [tourRect, setTourRect] = useState(null);
 
   const closeAbout = () => {
+    const isFirst = !localStorage.getItem('grafly_visited');
     localStorage.setItem('grafly_visited', '1');
     setAboutModal(false);
+    if (isFirst) setTimeout(() => setTourStep(0), 350);
   };
 
   const openShareModal = () => {
@@ -169,6 +262,12 @@ export default function Toolbar() {
     setJsonError("");
     setJsonModal(true);
   };
+
+  useEffect(() => {
+    if (tourStep === null) return;
+    const el = document.querySelector(TOUR_STEPS[tourStep].selector);
+    setTourRect(el ? el.getBoundingClientRect() : null);
+  }, [tourStep]);
 
   const getConvertText = (tab, fmt) => {
     if (tab !== 'export') return '';
@@ -914,6 +1013,78 @@ export default function Toolbar() {
             </div>
           </div>
         </div>,
+        document.body
+      )}
+
+      {/* Tour */}
+      {tourStep !== null && createPortal(
+        <>
+          {/* Dim overlay */}
+          <div
+            className="fixed inset-0 z-[9980]"
+            style={{ background: 'rgba(0,0,0,0.22)' }}
+            onClick={() => setTourStep(null)}
+          />
+
+          {/* Highlight ring around target */}
+          {tourRect && TOUR_STEPS[tourStep].highlight && (
+            <div
+              className="fixed z-[9981] rounded-xl pointer-events-none"
+              style={{
+                top: tourRect.top - 5,
+                left: tourRect.left - 5,
+                width: tourRect.width + 10,
+                height: tourRect.height + 10,
+                boxShadow: '0 0 0 2px #6366f1, 0 0 0 4px rgba(99,102,241,0.25)',
+              }}
+            />
+          )}
+
+          {/* Bubble */}
+          <div
+            className="fixed z-[9982] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-4 overflow-visible"
+            style={{ width: BUBBLE_W, ...getBubblePos(tourRect, TOUR_STEPS[tourStep].placement) }}
+          >
+            <TourArrow placement={TOUR_STEPS[tourStep].placement} />
+            <div>
+
+
+              {/* Step indicator */}
+              <div className="flex items-center gap-1.5 mb-2">
+                {TOUR_STEPS.map((_, i) => (
+                  <div
+                    key={i}
+                    className={`h-1 rounded-full transition-all ${i === tourStep ? 'bg-primary-500 w-4' : 'bg-gray-200 dark:bg-gray-700 w-1.5'}`}
+                  />
+                ))}
+              </div>
+
+              {/* Content */}
+              <p className="text-xs font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                {TOUR_STEPS[tourStep].title}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                {TOUR_STEPS[tourStep].body}
+              </p>
+
+              {/* Footer */}
+              <div className="flex items-center justify-between mt-3">
+                <button
+                  onClick={() => setTourStep(null)}
+                  className="text-[11px] text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                >
+                  Skip tour
+                </button>
+                <button
+                  onClick={() => tourStep >= TOUR_STEPS.length - 1 ? setTourStep(null) : setTourStep(tourStep + 1)}
+                  className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-primary-500 hover:bg-primary-600 text-white transition-colors"
+                >
+                  {tourStep >= TOUR_STEPS.length - 1 ? 'Done' : 'Next →'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>,
         document.body
       )}
     </div>

@@ -621,6 +621,7 @@ export default function PropertiesPanel() {
   if (!multiNode && !node && !edge) {
     return (
       <div
+        id="properties-panel"
         className="bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 flex flex-col"
         style={{ width: 220, minWidth: 220 }}
       >
@@ -647,6 +648,7 @@ export default function PropertiesPanel() {
 
   return (
     <div
+      id="properties-panel"
       className="tooltip-up bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 flex flex-col h-full overflow-y-auto"
       style={{ width: 220, minWidth: 220 }}
     >
