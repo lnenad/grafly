@@ -11,3 +11,4 @@ infra/terraform.tfstate
 infra/terraform.tfstate.backup
 infra/*.tfplan
 infra/primary.tfvars
+grafly_training_data.jsonl
